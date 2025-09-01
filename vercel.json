@@ -1,11 +1,6 @@
 {
   "buildCommand": "vite build && npm run build:server",
   "outputDirectory": "dist",
-  "functions": {
-    "api/*.js": {
-      "maxDuration": 30
-    }
-  },
   "rewrites": [
     {
       "source": "/((?!api/).*)",
