@@ -1,10 +1,1 @@
-{
-  "buildCommand": "vite build && npm run build:server",
-  "outputDirectory": "dist",
-  "rewrites": [
-    {
-      "source": "/((?!api/).*)",
-      "destination": "/index.html"
-    }
-  ]
-}
+{}

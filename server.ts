@@ -1,226 +1,246 @@
-//new server.js
-import express, { Request, Response } from "express";
-import fs from "fs";
-import path from "path";
+import express from "express";
 import cors from "cors";
-import nodemailer from "nodemailer";
-import fetch from "node-fetch";
+import path from "path";
+import { fileURLToPath } from "url";
 import dotenv from "dotenv";
+import nodemailer from "nodemailer";
 
+// Load environment variables
 dotenv.config();
 
 const app = express();
+const PORT = process.env.PORT || 3001;
+
+// Get current directory for ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Middleware
 app.use(cors());
 app.use(express.json());
 
-// Determine if we're in production or development
-const isProduction = process.env.NODE_ENV === "production";
+// Serve static files from dist folder (frontend)
+app.use(express.static(path.join(__dirname, "..", "dist")));
 
-// Set up paths based on environment
-const publicDir = isProduction
-  ? path.join(process.cwd(), "dist")
-  : path.join(process.cwd(), "public");
-const leadsDir = path.join(process.cwd(), "data");
-const leadsFile = path.join(leadsDir, "leads.json");
+// In-memory storage for leads
+let leads: any[] = [];
 
-// Load env variables
-const {
-  SMTP_HOST,
-  SMTP_PORT,
-  SMTP_USER,
-  SMTP_PASS,
-  SMTP_FROM,
-  ADMIN_EMAILS,
-  TELEGRAM_BOT_TOKEN,
-  TELEGRAM_CHAT_IDS,
-} = process.env;
-
-const adminEmails = ADMIN_EMAILS ? ADMIN_EMAILS.split(",") : [];
-const telegramChatIds = TELEGRAM_CHAT_IDS ? TELEGRAM_CHAT_IDS.split(",") : [];
-
-// Validate required environment variables
-const requiredEnvVars = {
-  SMTP_HOST,
-  SMTP_PORT,
-  SMTP_USER,
-  SMTP_PASS,
-  SMTP_FROM,
-  ADMIN_EMAILS,
-  TELEGRAM_BOT_TOKEN,
-  TELEGRAM_CHAT_IDS,
-};
-
-const missingEnvVars = Object.entries(requiredEnvVars)
-  .filter(([_, value]) => !value)
-  .map(([key]) => key);
-
-if (missingEnvVars.length > 0) {
-  console.warn("⚠️  Missing environment variables:", missingEnvVars.join(", "));
-  console.warn("Server will run with limited functionality");
+// Email configuration
+let emailTransporter: nodemailer.Transporter | null = null;
+if (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS) {
+  emailTransporter = nodemailer.createTransport({
+    host: process.env.SMTP_HOST,
+    port: Number(process.env.SMTP_PORT) || 587,
+    secure: false,
+    auth: {
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS,
+    },
+    tls: {
+      rejectUnauthorized: false,
+    },
+  });
 }
 
-// Nodemailer transporter (only if SMTP config is available)
-let transporter: nodemailer.Transporter | null = null;
-if (SMTP_HOST && SMTP_USER && SMTP_PASS) {
+// Notification functions
+async function sendEmailNotification(lead: any): Promise<boolean> {
+  if (!emailTransporter || !process.env.ADMIN_EMAILS) {
+    console.log("📧 Email not configured");
+    return false;
+  }
+
   try {
-    transporter = nodemailer.createTransport({
-      host: SMTP_HOST,
-      port: Number(SMTP_PORT) || 587,
-      secure: false,
-      auth: {
-        user: SMTP_USER,
-        pass: SMTP_PASS,
-      },
+    const adminEmails = process.env.ADMIN_EMAILS.split(",").map((email) =>
+      email.trim()
+    );
+
+    const info = await emailTransporter.sendMail({
+      from: process.env.SMTP_FROM || process.env.SMTP_USER,
+      to: adminEmails,
+      subject: "🎓 New School Contact - OnSchool",
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #2563eb; border-bottom: 2px solid #e5e7eb; padding-bottom: 10px;">
+            🎓 New School Contact Form Submission
+          </h2>
+          
+          <div style="background: #f9fafb; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <p><strong>👤 Name:</strong> ${lead.name}</p>
+            <p><strong>📧 Email:</strong> ${lead.email}</p>
+            <p><strong>📱 Phone:</strong> ${lead.phone || "Not provided"}</p>
+            <p><strong>🏫 School Name:</strong> ${lead.schoolName}</p>
+            <p><strong>💬 Message:</strong></p>
+            <div style="background: white; padding: 15px; border-left: 4px solid #2563eb; margin-top: 10px;">
+              ${lead.message}
+            </div>
+          </div>
+          
+          <p style="color: #6b7280; font-size: 14px;">
+            ⏰ <strong>Submitted:</strong> ${new Date(
+              lead.timestamp
+            ).toLocaleString()}
+          </p>
+          
+          <hr style="margin: 20px 0; border: none; border-top: 1px solid #e5e7eb;">
+          <p style="color: #6b7280; font-size: 12px; text-align: center;">
+            OnSchool - School Management Platform
+          </p>
+        </div>
+      `,
+      text: `
+🎓 New School Contact Form
+
+👤 Name: ${lead.name}
+📧 Email: ${lead.email}
+📱 Phone: ${lead.phone || "Not provided"}
+🏫 School: ${lead.schoolName}
+💬 Message: ${lead.message}
+⏰ Time: ${new Date(lead.timestamp).toLocaleString()}
+      `,
     });
-    console.log("✅ SMTP transporter configured successfully");
-  } catch (error) {
-    console.error("❌ Failed to create SMTP transporter:", error);
+
+    console.log("📧 Email sent to:", adminEmails.join(", "));
+    return true;
+  } catch (error: any) {
+    console.error("📧 Email failed:", error.message);
+    return false;
   }
 }
 
-// Ensure leads directory exists
-if (!fs.existsSync(leadsDir)) {
-  fs.mkdirSync(leadsDir, { recursive: true });
-}
+async function sendTelegramNotification(lead: any): Promise<boolean> {
+  const botToken = process.env.TELEGRAM_BOT_TOKEN;
+  const chatIds = process.env.TELEGRAM_CHAT_IDS;
 
-// Initialize leads file if it doesn't exist
-if (!fs.existsSync(leadsFile)) {
-  fs.writeFileSync(leadsFile, JSON.stringify([], null, 2));
-  console.log("📁 Created leads.json file");
-}
-
-// Ensure all leads have required fields
-const ensureLeadFields = (leads: any[]) => {
-  return leads.map((lead) => ({
-    ...lead,
-    status: lead.status || "new",
-    timestamp: lead.timestamp || lead.created_at || new Date().toISOString(),
-    created_at: lead.created_at || lead.timestamp || new Date().toISOString(),
-    source: lead.source || "contact_form",
-  }));
-};
-
-// Get all leads
-app.get("/api/leads", (req: Request, res: Response) => {
-  try {
-    const leads = JSON.parse(fs.readFileSync(leadsFile, "utf-8"));
-    res.json(ensureLeadFields(leads));
-  } catch (err) {
-    console.error("Error reading leads:", err);
-    res.status(500).json({ error: "Failed to read leads" });
+  if (!botToken || !chatIds) {
+    console.log("💬 Telegram not configured");
+    return false;
   }
-});
 
-// Get a specific lead by ID
-app.get("/api/leads/:id", (req: Request, res: Response) => {
   try {
-    const leads = JSON.parse(fs.readFileSync(leadsFile, "utf-8"));
-    const lead = leads.find((l: any) => l.id === req.params.id);
+    const chatList = chatIds.split(",").map((id) => id.trim());
 
-    if (!lead) {
-      return res.status(404).json({ error: "Lead not found" });
+    const message = `🎓 *New School Contact*
+
+👤 *Name:* ${escapeMarkdown(lead.name)}
+📧 *Email:* ${escapeMarkdown(lead.email)}
+📱 *Phone:* ${escapeMarkdown(lead.phone || "Not provided")}
+🏫 *School:* ${escapeMarkdown(lead.schoolName)}
+💬 *Message:* ${escapeMarkdown(lead.message)}
+
+⏰ *Time:* ${new Date(lead.timestamp).toLocaleString()}`;
+
+    let successCount = 0;
+    for (const chatId of chatList) {
+      try {
+        const response = await fetch(
+          `https://api.telegram.org/bot${botToken}/sendMessage`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              chat_id: chatId,
+              text: message,
+              parse_mode: "Markdown",
+            }),
+          }
+        );
+
+        if (response.ok) {
+          console.log(`💬 Telegram sent to: ${chatId}`);
+          successCount++;
+        } else {
+          console.log(`💬 Telegram failed for: ${chatId}`);
+        }
+      } catch (error: any) {
+        console.error(`💬 Telegram error for ${chatId}:`, error.message);
+      }
     }
 
-    res.json(lead);
-  } catch (err) {
-    console.error("Error reading lead:", err);
-    res.status(500).json({ error: "Failed to read lead" });
+    return successCount > 0;
+  } catch (error: any) {
+    console.error("💬 Telegram failed:", error.message);
+    return false;
   }
+}
+
+function escapeMarkdown(text: string): string {
+  if (!text) return "";
+  return text.replace(/[*_`\[\]()~>#+=|{}.!-]/g, "\\$&");
+}
+
+// API Routes
+
+// Health check
+app.get("/api/health", (req, res) => {
+  res.json({
+    status: "OK",
+    timestamp: new Date().toISOString(),
+    email: !!emailTransporter,
+    telegram: !!(
+      process.env.TELEGRAM_BOT_TOKEN && process.env.TELEGRAM_CHAT_IDS
+    ),
+    environment: process.env.NODE_ENV || "development",
+  });
 });
 
-// Save a new lead
-app.post("/api/leads", async (req: Request, res: Response) => {
+// Leads API
+app.get("/api/leads", (req, res) => {
+  res.json(leads);
+});
+
+app.post("/api/leads", async (req, res) => {
   try {
-    const leads = JSON.parse(fs.readFileSync(leadsFile, "utf-8"));
     const currentTimestamp = new Date().toISOString();
 
     const newLead = {
       id: Date.now().toString(),
-      ...req.body,
+      name: req.body.name,
+      email: req.body.email,
+      phone: req.body.phone,
+      schoolName: req.body.schoolName,
+      message: req.body.message,
       status: req.body.status || "new",
       timestamp: currentTimestamp,
       created_at: currentTimestamp,
+      source: "contact_form",
     };
 
     leads.push(newLead);
-    fs.writeFileSync(leadsFile, JSON.stringify(leads, null, 2));
+    console.log("\n📝 New lead received:", newLead.name);
 
-    // ------------------------------
-    // 1️⃣ Send Email Notification
-    // ------------------------------
-    if (transporter && adminEmails.length > 0) {
-      try {
-        const mailOptions = {
-          from: SMTP_FROM,
-          to: adminEmails,
-          subject: "📩 New Contact Form Submission",
-          text: `
-          You have a new lead submission:
+    // Send notifications
+    const [emailResult, telegramResult] = await Promise.allSettled([
+      sendEmailNotification(newLead),
+      sendTelegramNotification(newLead),
+    ]);
 
-          Name: ${newLead.name || "N/A"}
-          Phone: ${newLead.phone || "N/A"}
-          Email: ${newLead.email || "N/A"}
-          Message: ${newLead.message || "N/A"}
-          Submitted At: ${newLead.timestamp}
-          `,
-        };
+    const emailSuccess =
+      emailResult.status === "fulfilled" && emailResult.value;
+    const telegramSuccess =
+      telegramResult.status === "fulfilled" && telegramResult.value;
 
-        await transporter.sendMail(mailOptions);
-        console.log("✅ Email notification sent");
-      } catch (emailError) {
-        console.error("❌ Failed to send email notification:", emailError);
-      }
-    }
+    console.log("📊 Notifications sent:", {
+      email: emailSuccess,
+      telegram: telegramSuccess,
+    });
 
-    // ------------------------------
-    // 2️⃣ Send Telegram Notification
-    // ------------------------------
-    if (TELEGRAM_BOT_TOKEN && telegramChatIds.length > 0) {
-      try {
-        const telegramMessage = `
-📩 *New Contact Form Submission*  
-👤 Name: ${newLead.name || "N/A"}
-📱 Phone: ${newLead.phone || "N/A"}
-📧 Email: ${newLead.email || "N/A"}  
-💬 Message: ${newLead.message || "N/A"}  
-⏰ Submitted At: ${newLead.timestamp}
-`;
-
-        for (const chatId of telegramChatIds) {
-          await fetch(
-            `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,
-            {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                chat_id: chatId,
-                text: telegramMessage,
-                parse_mode: "Markdown",
-              }),
-            },
-          );
-        }
-        console.log("✅ Telegram notification sent");
-      } catch (telegramError) {
-        console.error(
-          "❌ Failed to send Telegram notification:",
-          telegramError,
-        );
-      }
-    }
-
-    res.status(201).json(newLead);
-  } catch (err) {
-    console.error("Error saving lead:", err);
-    res.status(500).json({ error: "Failed to save lead or notify admins" });
+    res.status(201).json({
+      success: true,
+      lead: newLead,
+      notifications: {
+        email: emailSuccess,
+        telegram: telegramSuccess,
+      },
+    });
+  } catch (error: any) {
+    console.error("❌ Error saving lead:", error.message);
+    res.status(500).json({ error: "Failed to save lead" });
   }
 });
 
-// Update a lead
-app.put("/api/leads/:id", (req: Request, res: Response) => {
+app.put("/api/leads/:id", async (req, res) => {
   try {
-    const leads = JSON.parse(fs.readFileSync(leadsFile, "utf-8"));
-    const leadIndex = leads.findIndex((l: any) => l.id === req.params.id);
+    const leadIndex = leads.findIndex((lead) => lead.id === req.params.id);
 
     if (leadIndex === -1) {
       return res.status(404).json({ error: "Lead not found" });
@@ -232,69 +252,35 @@ app.put("/api/leads/:id", (req: Request, res: Response) => {
       updated_at: new Date().toISOString(),
     };
 
-    fs.writeFileSync(leadsFile, JSON.stringify(leads, null, 2));
     res.json(leads[leadIndex]);
-  } catch (err) {
-    console.error("Error updating lead:", err);
+  } catch (error: any) {
+    console.error("Error updating lead:", error.message);
     res.status(500).json({ error: "Failed to update lead" });
   }
 });
 
-// Delete a lead
-app.delete("/api/leads/:id", (req: Request, res: Response) => {
-  try {
-    const leads = JSON.parse(fs.readFileSync(leadsFile, "utf-8"));
-    const filteredLeads = leads.filter((l: any) => l.id !== req.params.id);
-
-    if (filteredLeads.length === leads.length) {
-      return res.status(404).json({ error: "Lead not found" });
-    }
-
-    fs.writeFileSync(leadsFile, JSON.stringify(filteredLeads, null, 2));
-    res.json({ message: "Lead deleted successfully" });
-  } catch (err) {
-    console.error("Error deleting lead:", err);
-    res.status(500).json({ error: "Failed to delete lead" });
-  }
+// Serve frontend for all other routes (SPA routing)
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "..", "dist", "index.html"));
 });
 
-// Health check endpoint
-app.get("/api/health", (req: Request, res: Response) => {
-  res.json({
-    status: "healthy",
-    timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || "development",
-    publicDir,
-    features: {
-      email: !!transporter,
-      telegram: !!(TELEGRAM_BOT_TOKEN && telegramChatIds.length > 0),
-    },
-  });
-});
-
-// Serve static files from the appropriate directory
-app.use(express.static(publicDir));
-
-// Serve the React app for any other routes (SPA fallback)
-app.get("*", (req: Request, res: Response) => {
-  const indexPath = path.join(publicDir, "index.html");
-
-  if (fs.existsSync(indexPath)) {
-    res.sendFile(indexPath);
-  } else {
-    res.status(404).json({
-      error: "Frontend build not found",
-      publicDir,
-      indexPath,
-    });
-  }
-});
-
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
-  console.log(`📊 Health check: http://localhost:${PORT}/api/health`);
-  console.log(`📝 Leads API: http://localhost:${PORT}/api/leads`);
-  console.log(`🏗️  Environment: ${process.env.NODE_ENV || "development"}`);
-  console.log(`📁 Serving static files from: ${publicDir}`);
+// Start server
+app.listen(Number(PORT), "0.0.0.0", () => {
+  console.log(`\n🚀 OnSchool Production Server`);
+  console.log(`   Frontend + Backend running on: http://localhost:${PORT}`);
+  console.log(`\n📋 What's Running:`);
+  console.log(`   🌐 Frontend: Serving from /dist folder`);
+  console.log(`   🔧 Backend: API endpoints at /api/*`);
+  console.log(`\n🔧 Notifications:`);
+  console.log(
+    `   📧 Email: ${emailTransporter ? "✅ Ready" : "❌ Not configured"}`
+  );
+  console.log(
+    `   💬 Telegram: ${
+      process.env.TELEGRAM_BOT_TOKEN && process.env.TELEGRAM_CHAT_IDS
+        ? "✅ Ready"
+        : "❌ Not configured"
+    }`
+  );
+  console.log(`\n✅ Full production app ready!`);
 });

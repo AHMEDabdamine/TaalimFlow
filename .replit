@@ -5,7 +5,9 @@ run = "npm run dev:full"
 channel = "stable-25_05"
 
 [deployment]
-run = ["sh", "-c", "npm run dev:full"]
+run = ["sh", "-c", "npm run start"]
+deploymentTarget = "cloudrun"
+build = ["sh", "-c", "npm run deploy"]
 
 [[ports]]
 localPort = 3001
@@ -69,4 +71,4 @@ task = "shell.exec"
 args = "npm run server:dev"
 
 [agent]
-integrations = ["javascript_sendgrid==1.0.0", "javascript_mem_db==1.0.0"]
+integrations = ["javascript_mem_db==1.0.0", "javascript_sendgrid==1.0.0"]
