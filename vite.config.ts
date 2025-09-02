@@ -7,14 +7,22 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 5173,
-    allowedHosts: [
-      "438a3801-c1eb-4e3f-8215-ae7b4deb2892-00-12eutaxppinw.picard.replit.dev",
-    ],
+    allowedHosts: ["0.0.0.0"],
     proxy: {
       "/api": {
-        target: "https://taalim-flow.vercel.app/api/",
+        target: "https://taalimflow-production.up.railway.app",
         changeOrigin: true,
-        secure: false,
+        secure: true, // Changed to true since you're using HTTPS
+        rewrite: (path) => path, // Optional: explicitly define path rewriting
+        configure: (proxy, options) => {
+          // Optional: Add logging for debugging
+          proxy.on("error", (err, req, res) => {
+            console.log("Proxy error:", err);
+          });
+          proxy.on("proxyReq", (proxyReq, req, res) => {
+            console.log("Proxying request:", req.method, req.url);
+          });
+        },
       },
     },
   },
