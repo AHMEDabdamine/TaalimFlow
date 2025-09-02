@@ -6,42 +6,75 @@ export interface TelegramService {
 
 export class TelegramBotService implements TelegramService {
   private botToken: string;
-  private chatId: string;
+  private chatIds: string[];
 
-  constructor(botToken?: string, chatId?: string) {
+  constructor(botToken?: string, chatIds?: string | string[]) {
     this.botToken = botToken || process.env.TELEGRAM_BOT_TOKEN || "";
-    this.chatId = chatId || process.env.TELEGRAM_CHAT_ID || "";
+
+    // Support both single chat ID and multiple chat IDs
+    if (Array.isArray(chatIds)) {
+      this.chatIds = chatIds;
+    } else if (chatIds) {
+      this.chatIds = [chatIds];
+    } else {
+      // Check for multiple chat IDs in environment (comma-separated)
+      const envChatIds =
+        process.env.TELEGRAM_CHAT_IDS || process.env.TELEGRAM_CHAT_ID || "";
+      this.chatIds = envChatIds
+        .split(",")
+        .map((id) => id.trim())
+        .filter((id) => id.length > 0);
+    }
   }
 
   async sendNotification(message: string): Promise<void> {
-    if (!this.botToken || !this.chatId) {
+    if (!this.botToken || this.chatIds.length === 0) {
       console.log("Telegram not configured. Message would be:", message);
       return;
     }
 
-    try {
-      const url = `https://api.telegram.org/bot${this.botToken}/sendMessage`;
-      const response = await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          chat_id: this.chatId,
-          text: message,
-          parse_mode: "HTML",
-        }),
-      });
+    const sendPromises = this.chatIds.map(async (chatId) => {
+      try {
+        const url = `https://api.telegram.org/bot${this.botToken}/sendMessage`;
+        const response = await fetch(url, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            chat_id: chatId,
+            text: message,
+            parse_mode: "HTML",
+          }),
+        });
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error("Telegram API error:", errorText);
-        throw new Error(`Telegram API error: ${response.status}`);
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error(`Telegram API error for chat ${chatId}:`, errorText);
+          throw new Error(`Telegram API error: ${response.status}`);
+        }
+
+        console.log(
+          `Telegram notification sent successfully to chat ${chatId}`
+        );
+      } catch (error) {
+        console.error(
+          `Failed to send Telegram notification to chat ${chatId}:`,
+          error
+        );
+        throw error;
       }
+    });
 
-      console.log("Telegram notification sent successfully");
+    try {
+      // Send to all chat IDs in parallel
+      await Promise.all(sendPromises);
+      console.log(
+        `Telegram notifications sent successfully to ${this.chatIds.length} recipient(s)`
+      );
     } catch (error) {
-      console.error("Failed to send Telegram notification:", error);
+      // If any fail, we still want to know about partial success
+      console.error("Some Telegram notifications failed:", error);
       throw error;
     }
   }
@@ -67,8 +100,12 @@ export class TelegramBotService implements TelegramService {
 📧 <b>Email:</b> ${request.email}
 📱 <b>Téléphone/Phone:</b> ${request.phone || "Non fourni/Not provided"}
 🏫 <b>École/School:</b> ${request.schoolName || "Non fourni/Not provided"}
-🏷️ <b>Type d'école/School Type:</b> ${request.schoolType || "Non fourni/Not provided"}
-👥 <b>Nombre d'étudiants/Students:</b> ${request.numberOfStudents || "Non fourni/Not provided"}
+🏷️ <b>Type d'école/School Type:</b> ${
+      request.schoolType || "Non fourni/Not provided"
+    }
+👥 <b>Nombre d'étudiants/Students:</b> ${
+      request.numberOfStudents || "Non fourni/Not provided"
+    }
 🕐 <b>Soumis le/Submitted at:</b> ${new Date().toLocaleString("fr-FR")}
     `.trim();
   }
