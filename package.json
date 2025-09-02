@@ -12,7 +12,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "server:dev": "ts-node --esm false -P tsconfig.server.json server.ts",
-    "start": "node dist-server/server/server.js",
+    "start": "node dist-server/server.cjs",
     "start:dev": "NODE_ENV=development node dist-server/server.js",
     "dev:full": "concurrently \"npm run dev\" \"npm run server:dev\"",
     "clean": "rm -rf dist dist-server",
