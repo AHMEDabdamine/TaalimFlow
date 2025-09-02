@@ -12,7 +12,7 @@ export default defineConfig(({ mode }) => ({
     ],
     proxy: {
       "/api": {
-        target: "https://taalim-flow.vercel.app/",
+        target: "https://taalim-flow.vercel.app/api/",
         changeOrigin: true,
         secure: false,
       },
