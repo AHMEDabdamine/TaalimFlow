@@ -157,6 +157,10 @@ const UserCountDisplay = () => {
 
 const TaalimFlowLanding = () => {
   const { t, i18n } = useTranslation();
+
+  // Promotion banner control: 1 = show, 0 = hide
+  const SHOW_PROMOTION_BANNER = 1;
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -382,7 +386,7 @@ const TaalimFlowLanding = () => {
               <div className="flex items-center justify-center">
                 <img
                   src="/images/landing-page/phone-laptop.webp"
-                  alt="Taalim Flow Platform - Mobile and Desktop"
+                  alt="OnSchool Platform - Mobile and Desktop"
                   className="w-full max-w-9xl h-auto transform hover:scale-105 transition-transform duration-300 drop-shadow-2xl"
                 />
               </div>
@@ -784,6 +788,56 @@ const TaalimFlowLanding = () => {
             </p>
           </div>
 
+          {/* First 10 Schools Offer */}
+          {SHOW_PROMOTION_BANNER === 1 && (
+            <div className="flex justify-center mb-16 mt-12">
+              <div className="bg-gradient-to-br from-red-600 via-red-700 to-rose-700 rounded-xl px-10 py-6 text-center shadow-xl max-w-4xl border border-red-300 hover:shadow-2xl hover:scale-105 transition-all duration-300">
+                <div className="flex items-center justify-center mb-3">
+                  <span className="text-red-800 font-bold text-sm uppercase tracking-wide bg-yellow-400 px-3 py-1 rounded-full shadow-md">
+                    {i18n.language === "ar"
+                      ? "عرض خاص"
+                      : i18n.language === "fr"
+                      ? "Offre Spéciale"
+                      : "Special Offer"}
+                  </span>
+                </div>
+
+                <h3 className="text-white font-bold text-xl mb-3">
+                  {i18n.language === "ar"
+                    ? "للمدارس العشر الأولى فقط"
+                    : i18n.language === "fr"
+                    ? "Seulement pour les 10 premières écoles"
+                    : "First 10 Schools Only"}
+                </h3>
+
+                <p className="text-red-100 text-sm font-medium mb-4">
+                  {i18n.language === "ar"
+                    ? "خصم كبير على رسوم الإعداد + استشارة مجانية"
+                    : i18n.language === "fr"
+                    ? "Grande réduction sur les frais d'installation + consultation gratuite"
+                    : "Big discount on setup fees + free consultation"}
+                </p>
+
+                <button
+                  onClick={() => {
+                    const contactSection =
+                      document.getElementById("contact-section");
+                    if (contactSection) {
+                      contactSection.scrollIntoView({ behavior: "smooth" });
+                    }
+                  }}
+                  className="bg-white text-red-700 px-6 py-3 rounded-full text-sm font-bold shadow-lg hover:bg-red-50 hover:shadow-xl transition-all duration-200 hover:scale-105"
+                >
+                  {i18n.language === "ar"
+                    ? "احجز مكانك الآن"
+                    : i18n.language === "fr"
+                    ? "Réservez votre place maintenant"
+                    : "Reserve Your Spot Now"}
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Pricing Cards */}
           <div className="grid lg:grid-cols-2 xl:grid-cols-4 gap-8">
             {(() => {
@@ -869,7 +923,7 @@ const TaalimFlowLanding = () => {
                   yearlyPrice: "20,000",
                   features: [
                     "كل مزايا الخطة الأساسية",
-                    "إصلاح أخطاء مجاني وسريع",
+                    "إصل.�ح أخطاء مجاني وسريع",
                     "إمكانية تعديل النظام حسب احتياجاتكم",
                   ],
                   featuresEn: [

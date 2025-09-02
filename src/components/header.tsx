@@ -5,9 +5,11 @@ import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { Menu, X, ChevronDown, School2, Sparkles } from "lucide-react";
+import { useTheme } from "next-themes";
 
 export function Header() {
   const { t, i18n } = useTranslation();
+  const { theme } = useTheme();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("");
@@ -149,9 +151,9 @@ export function Header() {
               }`}
             >
               <img
-                src="/images/landing-page/taalim-flow-logo.png"
+                src={theme === "dark" ? "/images/taalim-flow-logo-dark.png" : "/images/landing-page/taalim-flow-logo.png"}
                 alt="Taalim Flow"
-                className="h-10 w-auto"
+                className="h-10 w-auto transition-opacity duration-300"
               />
             </Link>
           </div>
