@@ -17,7 +17,6 @@ const resources = {
       "header.title": "TaalimFlow",
       "header.subtitle": "إدارة ذكية للمدارس",
 
-
       // Hero Section
       "hero.title": "حوّل مدرستك",
       "hero.subtitle": "مع TaalimFlow",
@@ -155,10 +154,12 @@ const resources = {
       "carousel.usersManagement": "إدارة المستخدمين مع أدوار وصلاحيات",
       "carousel.customizableSettings": "إعدادات قابلة للتخصيص",
       "carousel.title": "استكشف مميزات النظام",
-      "carousel.subtitle": "اكتشف كيف يمكن لـ Taalim Flow تبسيط إدارة مدرستك أو مركز التدريب",
+      "carousel.subtitle":
+        "اكتشف كيف يمكن لـ Taalim Flow تبسيط إدارة مدرستك أو مركز التدريب",
       "features.carousel.title": "المميزات",
-      "features.subtitle": "اكتشف كيف يبدو تطبيق OnSchool على الهاتف المحمول",
-      "loading": "جاري التحميل",
+      "features.subtitle":
+        "اكتشف كيف يبدو تطبيق Taalim Flow على الهاتف المحمول",
+      loading: "جاري التحميل",
 
       // Contact Section
       "contact.title": "تواصل معنا",
@@ -181,8 +182,7 @@ const resources = {
       "contact.form.messagePlaceholder": "أخبرنا عن احتياجاتك...",
       "contact.form.submit": "احجز جلسة تعريفية",
       "contact.form.submitting": "جاري الإرسال...",
-      "contact.form.success":
-        "تم إرسال رسالتك بنجاح! سنعود إليك قريباً.",
+      "contact.form.success": "تم إرسال رسالتك بنجاح! سنعود إليك قريباً.",
       "contact.form.successTitle": "شكراً لك! 🎉",
       "contact.form.successMessage":
         "تم استلام رسالتك بنجاح وسنتواصل معك قريباً",
@@ -265,7 +265,8 @@ const resources = {
 
       // Download Section
       "download.title": "حمل تطبيق TaalimFlow",
-      "download.subtitle": "استمتع بتجربة كاملة مع تطبيقاتنا المخصصة للجوال وسطح المكتب",
+      "download.subtitle":
+        "استمتع بتجربة كاملة مع تطبيقاتنا المخصصة للجوال وسطح المكتب",
       "download.mobile": "للهاتف المحمول",
       "download.desktop": "لسطح المكتب",
       "download.ios": "تحميل لـ iOS",
@@ -274,11 +275,13 @@ const resources = {
       "download.mac": "تحميل لـ Mac",
       "download.linux": "تحميل لـ Linux",
       "download.comingSoon": "قريباً",
-      "download.description": "احصل على الوصول الكامل لجميع ميزات TaalimFlow في أي مكان وزمان",
+      "download.description":
+        "احصل على الوصول الكامل لجميع ميزات TaalimFlow في أي مكان وزمان",
 
       // Download Links Management
       "admin.downloadLinks.title": "إدارة روابط التحميل",
-      "admin.downloadLinks.description": "تحديث روابط تحميل التطبيقات للجوال وسطح المكتب",
+      "admin.downloadLinks.description":
+        "تحديث روابط تحميل التطبيقات للجوال وسطح المكتب",
       "admin.downloadLinks.mobile": "تطبيقات الجوال",
       "admin.downloadLinks.desktop": "تطبيقات سطح المكتب",
       "admin.downloadLinks.url": "رابط التحميل",
@@ -303,13 +306,13 @@ const resources = {
       "header.title": "Taalim Flow",
       "header.subtitle": "Gestion intelligente d'école",
 
-
       // Hero Section
       "hero.title": "Transformez votre école",
       "hero.subtitle": "avec Taalim Flow",
       "hero.description":
         "Une plateforme numérique complète conçue spécifiquement pour les écoles algériennes. Gérez les étudiants, suivez les présences, facilitez la communication et gérez les paiements en un seul endroit.",
-      "hero.schoolsUsingApp": "Plus de 50 écoles utilisent TaalimFlow en Algérie",
+      "hero.schoolsUsingApp":
+        "Plus de 50 écoles utilisent TaalimFlow en Algérie",
       "hero.fromAllOverAlgeria": "De tout l'Algérie",
       "hero.schoolLocation": "École",
       "hero.schoolsConnected": "École connectée",
@@ -440,24 +443,32 @@ const resources = {
       "carousel.usersManagement": "Admin utilisateurs avec rôles et accès.",
       "carousel.customizableSettings": "Paramètres personnalisables",
       // Phone Carousel translations - Based on image names
-      "phoneCarousel.mainScreen": "🏠 Écran principal - centre de contrôle intelligent",
+      "phoneCarousel.mainScreen":
+        "🏠 Écran principal - centre de contrôle intelligent",
       "phoneCarousel.profile": "👤 Profil - gestion des données et paramètres",
       "phoneCarousel.children": "🧒 Gestion enfants - suivi complet des élèves",
-      "phoneCarousel.teacher": "👨‍🏫 Portail enseignant - outils pédagogiques avancés",
-      "phoneCarousel.groups": "👥 Groupes - organisation des classes et équipes",
+      "phoneCarousel.teacher":
+        "👨‍🏫 Portail enseignant - outils pédagogiques avancés",
+      "phoneCarousel.groups":
+        "👥 Groupes - organisation des classes et équipes",
       "phoneCarousel.courses": "📚 Cours - gestion des programmes scolaires",
-      "phoneCarousel.messages": "💬 Messages - communication instantanée et sécurisée",
-      "phoneCarousel.timeTable": "📅 Emploi du temps - organisation des horaires",
+      "phoneCarousel.messages":
+        "💬 Messages - communication instantanée et sécurisée",
+      "phoneCarousel.timeTable":
+        "📅 Emploi du temps - organisation des horaires",
       "phoneCarousel.announcements": "📢 Annonces - nouvelles et mises à jour",
       "phoneCarousel.blog": "📰 Blog - contenu éducatif et actualités",
-      "phoneCarousel.administration": "⚙️ Administration - contrôle total du système",
-      "phoneCarousel.createAccPage": "🆕 Création de compte - rejoignez facilement",
+      "phoneCarousel.administration":
+        "⚙️ Administration - contrôle total du système",
+      "phoneCarousel.createAccPage":
+        "🆕 Création de compte - rejoignez facilement",
       "carousel.title": "Explorez les fonctionnalités du système",
-      "carousel.subtitle": "Découvrez comment TaalimFlow peut simplifier la gestion de votre école ou centre de formation",
+      "carousel.subtitle":
+        "Découvrez comment TaalimFlow peut simplifier la gestion de votre école ou centre de formation",
       "features.carousel.title": "Fonctionnalités",
       "features.subtitle":
         "Découvrez à quoi ressemble l'application TaalimFlow sur les appareils mobiles",
-      "loading": "Chargement",
+      loading: "Chargement",
       // Contact Section
       "contact.title": "Contactez-nous",
       "contact.description":
@@ -567,7 +578,8 @@ const resources = {
 
       // Download Section
       "download.title": "Télécharger l'app TaalimFlow",
-      "download.subtitle": "Profitez d'une expérience complète avec nos applications dédiées mobile et bureau",
+      "download.subtitle":
+        "Profitez d'une expérience complète avec nos applications dédiées mobile et bureau",
       "download.mobile": "Mobile",
       "download.desktop": "Bureau",
       "download.ios": "Télécharger pour iOS",
@@ -576,11 +588,13 @@ const resources = {
       "download.mac": "Télécharger pour Mac",
       "download.linux": "Télécharger pour Linux",
       "download.comingSoon": "Bientôt disponible",
-      "download.description": "Accédez à toutes les fonctionnalités de TaalimFlow n'importe où, n'importe quand",
+      "download.description":
+        "Accédez à toutes les fonctionnalités de TaalimFlow n'importe où, n'importe quand",
 
       // Download Links Management
       "admin.downloadLinks.title": "Gestion des liens de téléchargement",
-      "admin.downloadLinks.description": "Mettre à jour les liens de téléchargement des applications mobiles et bureau",
+      "admin.downloadLinks.description":
+        "Mettre à jour les liens de téléchargement des applications mobiles et bureau",
       "admin.downloadLinks.mobile": "Applications mobiles",
       "admin.downloadLinks.desktop": "Applications bureau",
       "admin.downloadLinks.url": "Lien de téléchargement",
@@ -593,9 +607,10 @@ const resources = {
   },
   en: {
     translation: {
-      // Carousel Section  
+      // Carousel Section
       "carousel.title": "Explore System Features",
-      "carousel.subtitle": "See how TaalimFlow can simplify managing your school or training center",
+      "carousel.subtitle":
+        "See how TaalimFlow can simplify managing your school or training center",
 
       // Header
       "header.home": "Home",
@@ -608,7 +623,6 @@ const resources = {
       "header.getStarted": "get started",
       "header.title": "Taalim Flow",
       "header.subtitle": "Smart School Management",
-
 
       // Hero Section
       "hero.title": "Transform Your School",
@@ -750,20 +764,24 @@ const resources = {
       // Phone Carousel translations - Based on image names
       "phoneCarousel.mainScreen": "🏠 Main screen - smart control center",
       "phoneCarousel.profile": "👤 Profile - manage your data and settings",
-      "phoneCarousel.children": "🧒 Children management - comprehensive student tracking",
+      "phoneCarousel.children":
+        "🧒 Children management - comprehensive student tracking",
       "phoneCarousel.teacher": "👨‍🏫 Teacher portal - advanced teaching tools",
       "phoneCarousel.groups": "👥 Groups - organize classes and teams",
       "phoneCarousel.courses": "📚 Courses - manage academic programs",
-      "phoneCarousel.messages": "💬 Messages - instant and secure communication",
+      "phoneCarousel.messages":
+        "💬 Messages - instant and secure communication",
       "phoneCarousel.timeTable": "📅 Time table - schedule organization",
       "phoneCarousel.announcements": "📢 Announcements - news and updates",
       "phoneCarousel.blog": "📰 Blog - educational content and news",
-      "phoneCarousel.administration": "⚙️ Administration - complete system control",
-      "phoneCarousel.createAccPage": "🆕 Create account page - join the platform easily",
+      "phoneCarousel.administration":
+        "⚙️ Administration - complete system control",
+      "phoneCarousel.createAccPage":
+        "🆕 Create account page - join the platform easily",
       "features.carousel.title": "Features",
       "features.subtitle":
         "Discover how the TaalimFlow app looks on mobile devices",
-      "loading": "Loading",
+      loading: "Loading",
       // Contact Section
       "contact.title": "Contact Us",
       "contact.description":
@@ -868,7 +886,8 @@ const resources = {
 
       // Download Section
       "download.title": "Download TaalimFlow App",
-      "download.subtitle": "Enjoy a complete experience with our dedicated mobile and desktop applications",
+      "download.subtitle":
+        "Enjoy a complete experience with our dedicated mobile and desktop applications",
       "download.mobile": "Mobile",
       "download.desktop": "Desktop",
       "download.ios": "Download for iOS",
@@ -877,11 +896,13 @@ const resources = {
       "download.mac": "Download for Mac",
       "download.linux": "Download for Linux",
       "download.comingSoon": "Coming Soon",
-      "download.description": "Get full access to all TaalimFlow features anywhere, anytime",
+      "download.description":
+        "Get full access to all TaalimFlow features anywhere, anytime",
 
       // Download Links Management
       "admin.downloadLinks.title": "Manage Download Links",
-      "admin.downloadLinks.description": "Update download links for mobile and desktop applications",
+      "admin.downloadLinks.description":
+        "Update download links for mobile and desktop applications",
       "admin.downloadLinks.mobile": "Mobile Apps",
       "admin.downloadLinks.desktop": "Desktop Apps",
       "admin.downloadLinks.url": "Download URL",

@@ -65,7 +65,7 @@ const AnimatedCounter = ({ targetValue, duration = 2000, suffix = "" }) => {
       // Easing function for smooth animation
       const easeOutQuart = 1 - Math.pow(1 - progress, 4);
       const value = Math.floor(
-        startValue + (targetValue - startValue) * easeOutQuart,
+        startValue + (targetValue - startValue) * easeOutQuart
       );
 
       setCurrentValue(value);
@@ -82,8 +82,8 @@ const AnimatedCounter = ({ targetValue, duration = 2000, suffix = "" }) => {
     i18n.language === "ar"
       ? "ar-DZ"
       : i18n.language === "fr"
-        ? "fr-FR"
-        : "en-US";
+      ? "fr-FR"
+      : "en-US";
 
   return (
     <span className="font-bold text-2xl text-blue-600 dark:text-blue-400">
@@ -254,10 +254,10 @@ const TaalimFlowLanding = () => {
 
     // Submit form to backend API
     try {
-      const response = await fetch('/api/contact', {
-        method: 'POST',
+      const response = await fetch("/api/contact", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           name: formData.name.trim(),
@@ -287,13 +287,14 @@ const TaalimFlowLanding = () => {
         // Hide success message after 5s
         setTimeout(() => setShowSuccess(false), 5000);
       } else {
-        throw new Error(result.message || 'Failed to submit form');
+        throw new Error(result.message || "Failed to submit form");
       }
     } catch (error) {
       console.error("❌ Error submitting form:", error);
       setSubmitError(
-        error instanceof Error ? error.message : 
-        t("contact.form.submitError") || "حدث خطأ أثناء إرسال النموذج"
+        error instanceof Error
+          ? error.message
+          : t("contact.form.submitError") || "حدث خطأ أثناء إرسال النموذج"
       );
     } finally {
       setIsSubmitting(false);
@@ -381,7 +382,7 @@ const TaalimFlowLanding = () => {
               <div className="flex items-center justify-center">
                 <img
                   src="/images/landing-page/phone-laptop.webp"
-                  alt="OnSchool Platform - Mobile and Desktop"
+                  alt="Taalim Flow Platform - Mobile and Desktop"
                   className="w-full max-w-9xl h-auto transform hover:scale-105 transition-transform duration-300 drop-shadow-2xl"
                 />
               </div>
@@ -1067,10 +1068,12 @@ const TaalimFlowLanding = () => {
                         {plan.setup && (
                           <div className="text-center">
                             <div className="text-lg font-semibold text-gray-900 dark:text-white">
-                              + {plan.price}{t("pricing.currency")} {getCurrentPeriod(plan)}
+                              + {plan.price}
+                              {t("pricing.currency")} {getCurrentPeriod(plan)}
                               {plan.yearlyPrice && (
                                 <span className="text-lg font-semibold text-gray-900 dark:text-white">
-                                  {" "}أو {t("pricing.yearly")}: {plan.yearlyPrice}{" "}
+                                  {" "}
+                                  أو {t("pricing.yearly")}: {plan.yearlyPrice}{" "}
                                   {t("pricing.currency")}
                                 </span>
                               )}
@@ -1138,7 +1141,12 @@ const TaalimFlowLanding = () => {
                   <Button
                     variant="outline"
                     size="lg"
-                    className={`w-full max-w-xs border-2 border-gray-300 hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 ${!downloadLinks?.mobile?.appstore?.enabled || downloadLinks?.mobile?.appstore?.comingSoon ? "" : "cursor-pointer"}`}
+                    className={`w-full max-w-xs border-2 border-gray-300 hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 ${
+                      !downloadLinks?.mobile?.appstore?.enabled ||
+                      downloadLinks?.mobile?.appstore?.comingSoon
+                        ? ""
+                        : "cursor-pointer"
+                    }`}
                     disabled={
                       !downloadLinks?.mobile?.appstore?.enabled ||
                       downloadLinks?.mobile?.appstore?.comingSoon
@@ -1150,7 +1158,7 @@ const TaalimFlowLanding = () => {
                       ) {
                         window.open(
                           downloadLinks.mobile.appstore.url,
-                          "_blank",
+                          "_blank"
                         );
                       }
                     }}
@@ -1172,7 +1180,12 @@ const TaalimFlowLanding = () => {
                   <Button
                     variant="outline"
                     size="lg"
-                    className={`w-full max-w-xs border-2 border-gray-300 hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 ${!downloadLinks?.mobile?.googleplay?.enabled || downloadLinks?.mobile?.googleplay?.comingSoon ? "" : "cursor-pointer"}`}
+                    className={`w-full max-w-xs border-2 border-gray-300 hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 ${
+                      !downloadLinks?.mobile?.googleplay?.enabled ||
+                      downloadLinks?.mobile?.googleplay?.comingSoon
+                        ? ""
+                        : "cursor-pointer"
+                    }`}
                     disabled={
                       !downloadLinks?.mobile?.googleplay?.enabled ||
                       downloadLinks?.mobile?.googleplay?.comingSoon
@@ -1184,7 +1197,7 @@ const TaalimFlowLanding = () => {
                       ) {
                         window.open(
                           downloadLinks.mobile.googleplay.url,
-                          "_blank",
+                          "_blank"
                         );
                       }
                     }}
@@ -1218,7 +1231,12 @@ const TaalimFlowLanding = () => {
                   <Button
                     variant="outline"
                     size="lg"
-                    className={`w-full max-w-xs border-2 border-gray-300 hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 ${!downloadLinks?.desktop?.windows?.enabled || downloadLinks?.desktop?.windows?.comingSoon ? "" : "cursor-pointer"}`}
+                    className={`w-full max-w-xs border-2 border-gray-300 hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 ${
+                      !downloadLinks?.desktop?.windows?.enabled ||
+                      downloadLinks?.desktop?.windows?.comingSoon
+                        ? ""
+                        : "cursor-pointer"
+                    }`}
                     disabled={
                       !downloadLinks?.desktop?.windows?.enabled ||
                       downloadLinks?.desktop?.windows?.comingSoon
@@ -1230,7 +1248,7 @@ const TaalimFlowLanding = () => {
                       ) {
                         window.open(
                           downloadLinks.desktop.windows.url,
-                          "_blank",
+                          "_blank"
                         );
                       }
                     }}
@@ -1252,7 +1270,12 @@ const TaalimFlowLanding = () => {
                   <Button
                     variant="outline"
                     size="lg"
-                    className={`w-full max-w-xs border-2 border-gray-300 hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 ${!downloadLinks?.desktop?.mac?.enabled || downloadLinks?.desktop?.mac?.comingSoon ? "" : "cursor-pointer"}`}
+                    className={`w-full max-w-xs border-2 border-gray-300 hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 ${
+                      !downloadLinks?.desktop?.mac?.enabled ||
+                      downloadLinks?.desktop?.mac?.comingSoon
+                        ? ""
+                        : "cursor-pointer"
+                    }`}
                     disabled={
                       !downloadLinks?.desktop?.mac?.enabled ||
                       downloadLinks?.desktop?.mac?.comingSoon
@@ -1392,7 +1415,7 @@ const TaalimFlowLanding = () => {
                           fill="currentColor"
                           viewBox="0 0 24 24"
                         >
-                          <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                          <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
                         </svg>
                       </div>
                     </div>
@@ -1411,7 +1434,7 @@ const TaalimFlowLanding = () => {
                           fill="currentColor"
                           viewBox="0 0 24 24"
                         >
-                          <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                          <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
                         </svg>
                         تابعنا على فيسبوك
                       </a>
@@ -1429,7 +1452,7 @@ const TaalimFlowLanding = () => {
                           fill="currentColor"
                           viewBox="0 0 24 24"
                         >
-                          <path d="M12.017 0C8.396 0 7.929.013 6.71.072 5.493.131 4.73.333 4.058.63c-.68.3-1.277.703-1.86 1.286C1.616 2.5 1.213 3.097.913 3.777.616 4.449.414 5.212.355 6.429.296 7.648.283 8.115.283 11.736c0 3.621.013 4.088.072 5.307.059 1.217.261 1.98.558 2.652.3.68.703 1.277 1.286 1.86.583.583 1.18.986 1.86 1.286.672.297 1.435.499 2.652.558 1.219.059 1.686.072 5.307.072 3.621 0 4.088-.013 5.307-.072 1.217-.059 1.98-.261 2.652-.558.68-.3 1.277-.703 1.86-1.286.583-.583.986-1.18 1.286-1.86.297-.672.499-1.435.558-2.652.059-1.219.072-1.686.072-5.307 0-3.621-.013-4.088-.072-5.307-.059-1.217-.261-1.98-.558-2.652-.3-.68-.703-1.277-1.286-1.86C18.337.913 17.74.51 17.06.21 16.388-.087 15.625-.289 14.408-.348 13.189-.407 12.722-.42 9.101-.42h2.916zm-.056 5.417c3.914 0 7.088 3.174 7.088 7.088s-3.174 7.088-7.088 7.088-7.088-3.174-7.088-7.088 3.174-7.088 7.088-7.088zm0 11.69c2.549 0 4.602-2.053 4.602-4.602S14.51 7.913 11.961 7.913s-4.602 2.053-4.602 4.602 2.053 4.602 4.602 4.602zm9.007-11.69c0 .914-.741 1.655-1.655 1.655s-1.655-.741-1.655-1.655.741-1.655 1.655-1.655 1.655.741 1.655 1.655z"/>
+                          <path d="M12.017 0C8.396 0 7.929.013 6.71.072 5.493.131 4.73.333 4.058.63c-.68.3-1.277.703-1.86 1.286C1.616 2.5 1.213 3.097.913 3.777.616 4.449.414 5.212.355 6.429.296 7.648.283 8.115.283 11.736c0 3.621.013 4.088.072 5.307.059 1.217.261 1.98.558 2.652.3.68.703 1.277 1.286 1.86.583.583 1.18.986 1.86 1.286.672.297 1.435.499 2.652.558 1.219.059 1.686.072 5.307.072 3.621 0 4.088-.013 5.307-.072 1.217-.059 1.98-.261 2.652-.558.68-.3 1.277-.703 1.86-1.286.583-.583.986-1.18 1.286-1.86.297-.672.499-1.435.558-2.652.059-1.219.072-1.686.072-5.307 0-3.621-.013-4.088-.072-5.307-.059-1.217-.261-1.98-.558-2.652-.3-.68-.703-1.277-1.286-1.86C18.337.913 17.74.51 17.06.21 16.388-.087 15.625-.289 14.408-.348 13.189-.407 12.722-.42 9.101-.42h2.916zm-.056 5.417c3.914 0 7.088 3.174 7.088 7.088s-3.174 7.088-7.088 7.088-7.088-3.174-7.088-7.088 3.174-7.088 7.088-7.088zm0 11.69c2.549 0 4.602-2.053 4.602-4.602S14.51 7.913 11.961 7.913s-4.602 2.053-4.602 4.602 2.053 4.602 4.602 4.602zm9.007-11.69c0 .914-.741 1.655-1.655 1.655s-1.655-.741-1.655-1.655.741-1.655 1.655-1.655 1.655.741 1.655 1.655z" />
                         </svg>
                       </div>
                     </div>
@@ -1448,7 +1471,7 @@ const TaalimFlowLanding = () => {
                           fill="currentColor"
                           viewBox="0 0 24 24"
                         >
-                          <path d="M12.017 0C8.396 0 7.929.013 6.71.072 5.493.131 4.73.333 4.058.63c-.68.3-1.277.703-1.86 1.286C1.616 2.5 1.213 3.097.913 3.777.616 4.449.414 5.212.355 6.429.296 7.648.283 8.115.283 11.736c0 3.621.013 4.088.072 5.307.059 1.217.261 1.98.558 2.652.3.68.703 1.277 1.286 1.86.583.583 1.18.986 1.86 1.286.672.297 1.435.499 2.652.558 1.219.059 1.686.072 5.307.072 3.621 0 4.088-.013 5.307-.072 1.217-.059 1.98-.261 2.652-.558.68-.3 1.277-.703 1.86-1.286.583-.583.986-1.18 1.286-1.86.297-.672.499-1.435.558-2.652.059-1.219.072-1.686.072-5.307 0-3.621-.013-4.088-.072-5.307-.059-1.217-.261-1.98-.558-2.652-.3-.68-.703-1.277-1.286-1.86C18.337.913 17.74.51 17.06.21 16.388-.087 15.625-.289 14.408-.348 13.189-.407 12.722-.42 9.101-.42h2.916zm-.056 5.417c3.914 0 7.088 3.174 7.088 7.088s-3.174 7.088-7.088 7.088-7.088-3.174-7.088-7.088 3.174-7.088 7.088-7.088zm0 11.69c2.549 0 4.602-2.053 4.602-4.602S14.51 7.913 11.961 7.913s-4.602 2.053-4.602 4.602 2.053 4.602 4.602 4.602zm9.007-11.69c0 .914-.741 1.655-1.655 1.655s-1.655-.741-1.655-1.655.741-1.655 1.655-1.655 1.655.741 1.655 1.655z"/>
+                          <path d="M12.017 0C8.396 0 7.929.013 6.71.072 5.493.131 4.73.333 4.058.63c-.68.3-1.277.703-1.86 1.286C1.616 2.5 1.213 3.097.913 3.777.616 4.449.414 5.212.355 6.429.296 7.648.283 8.115.283 11.736c0 3.621.013 4.088.072 5.307.059 1.217.261 1.98.558 2.652.3.68.703 1.277 1.286 1.86.583.583 1.18.986 1.86 1.286.672.297 1.435.499 2.652.558 1.219.059 1.686.072 5.307.072 3.621 0 4.088-.013 5.307-.072 1.217-.059 1.98-.261 2.652-.558.68-.3 1.277-.703 1.86-1.286.583-.583.986-1.18 1.286-1.86.297-.672.499-1.435.558-2.652.059-1.219.072-1.686.072-5.307 0-3.621-.013-4.088-.072-5.307-.059-1.217-.261-1.98-.558-2.652-.3-.68-.703-1.277-1.286-1.86C18.337.913 17.74.51 17.06.21 16.388-.087 15.625-.289 14.408-.348 13.189-.407 12.722-.42 9.101-.42h2.916zm-.056 5.417c3.914 0 7.088 3.174 7.088 7.088s-3.174 7.088-7.088 7.088-7.088-3.174-7.088-7.088 3.174-7.088 7.088-7.088zm0 11.69c2.549 0 4.602-2.053 4.602-4.602S14.51 7.913 11.961 7.913s-4.602 2.053-4.602 4.602 2.053 4.602 4.602 4.602zm9.007-11.69c0 .914-.741 1.655-1.655 1.655s-1.655-.741-1.655-1.655.741-1.655 1.655-1.655 1.655.741 1.655 1.655z" />
                         </svg>
                         تابعنا على انستغرام
                       </a>
@@ -1663,7 +1686,9 @@ const TaalimFlowLanding = () => {
                 {t("footer.description")}
               </p>
               <div
-                className={`flex ${isRTL ? "space-x-reverse space-x-4" : "space-x-4"}`}
+                className={`flex ${
+                  isRTL ? "space-x-reverse space-x-4" : "space-x-4"
+                }`}
               >
                 <div className="w-10 h-10 bg-blue-600 hover:bg-blue-700 rounded-full flex items-center justify-center transition-colors cursor-pointer">
                   <span className="text-sm font-semibold text-white">f</span>
