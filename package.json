@@ -20,6 +20,8 @@
     "test:build": "npm run build && npm run start:dev"
   },
   "dependencies": {
+    "@vercel/kv": "^1.0.0",
+    "@vercel/node": "^3.0.0",
     "@fontsource-variable/inter": "^5.2.5",
     "@fontsource/alexandria": "^5.2.6",
     "@fontsource/cairo": "^5.2.6",
