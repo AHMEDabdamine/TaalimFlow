@@ -1,18 +1,16 @@
 {
-  "contactSubmissions": [
-    {
-      "id": 1,
-      "name": "سعاد آيت أحمد",
-      "email": "your.email.user41093@gmail.com",
-      "phone": "0698655281",
-      "schoolName": "سمير آيت أحمد",
-      "message": "Distinctio aperiam mollitia.",
-      "submittedAt": "2025-09-02T00:47:49.386Z",
-      "isRead": "false",
-      "status": "new"
-    }
-  ],
+  "contactSubmissions": [],
   "demoRequests": [],
-  "nextContactId": 2,
-  "nextDemoId": 1
+  "nextContactId": 1,
+  "nextDemoId": 1,
+  "settings": {
+    "companyName": "TaalimFlow",
+    "companyEmail": "contact@taalimflow.com",
+    "companyPhone": "+213123456789",
+    "pricing": {
+      "basic": "9,999 DZD",
+      "premium": "19,999 DZD",
+      "enterprise": "Sur mesure"
+    }
+  }
 }

@@ -66,5 +66,14 @@ author = 42888794
 task = "shell.exec"
 args = "npm run deploy"
 
+[[workflows.workflow]]
+name = "start"
+mode = "sequential"
+author = 42888794
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run start"
+
 [agent]
 integrations = ["javascript_log_in_with_replit==1.0.0", "javascript_database==1.0.0"]
