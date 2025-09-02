@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { storage } from '../../../../server/storage';
+import { getStorage } from '../../../../server/vercel-storage';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Enable CORS
@@ -21,6 +21,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(400).json({ success: false, message: 'Invalid ID' });
     }
 
+    const storage = getStorage();
     await storage.markContactSubmissionAsRead(id);
     res.json({ success: true, message: "Marked as read" });
   } catch (error) {
