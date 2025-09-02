@@ -7,9 +7,7 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 5173,
-    allowedHosts: [
-      "438a3801-c1eb-4e3f-8215-ae7b4deb2892-00-12eutaxppinw.picard.replit.dev",
-    ],
+    allowedHosts: ["0.0.0.0"],
     proxy: {
       "/api": {
         target: "https://taalimflow-production.up.railway.app",
