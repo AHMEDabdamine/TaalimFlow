@@ -12,9 +12,9 @@ export default defineConfig(({ mode }) => ({
     ],
     proxy: {
       "/api": {
-        target: "http://localhost:3001",
+        target: "https://taalimflow-production.up.railway.app",
         changeOrigin: true,
-        secure: false,
+        secure: true,
       },
     },
   },
