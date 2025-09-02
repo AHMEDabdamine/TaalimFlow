@@ -601,18 +601,6 @@ const TaalimFlowLanding = () => {
                     {t("benefits.teachers.feature2")}
                   </span>
                 </div>
-                <div className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-blue-600 mt-1 flex-shrink-0" />
-                  <span className="text-blue-700 dark:text-blue-300">
-                    {t("benefits.teachers.feature3")}
-                  </span>
-                </div>
-                <div className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-blue-600 mt-1 flex-shrink-0" />
-                  <span className="text-blue-700 dark:text-blue-300">
-                    {t("benefits.teachers.feature4")}
-                  </span>
-                </div>
               </CardContent>
             </Card>
 
@@ -783,7 +771,7 @@ const TaalimFlowLanding = () => {
       </section>
 
       {/* Pricing Section */}
-      <section className="py-20 bg-white dark:bg-gray-900">
+      <section id="pricing-section" className="py-20 bg-white dark:bg-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Section Header */}
           <div className="text-center mb-16">
@@ -1046,33 +1034,48 @@ const TaalimFlowLanding = () => {
                         {getCurrentPlanName(plan)}
                       </CardTitle>
                       <div className="space-y-2">
-                        <div className="flex items-baseline justify-center gap-2">
-                          <span className="text-4xl font-bold text-gray-900 dark:text-white">
-                            {plan.price}
-                          </span>
-                          <span className="text-lg text-gray-600 dark:text-gray-300">
-                            {t("pricing.currency")}
-                          </span>
-                        </div>
-                        <p className="text-gray-600 dark:text-gray-300">
-                          {getCurrentPeriod(plan)}
-                        </p>
                         {plan.setup && (
-                          <p className="text-lg text-gray-700 dark:text-gray-300 font-semibold">
-                            {t("pricing.setup")}: {plan.setup}{" "}
-                            {t("pricing.currency")}
+                          <div className="flex items-baseline justify-center gap-2">
+                            <span className="text-4xl font-bold text-gray-900 dark:text-white">
+                              {plan.setup}
+                            </span>
+                            <span className="text-lg text-gray-600 dark:text-gray-300">
+                              {t("pricing.currency")}
+                            </span>
+                          </div>
+                        )}
+                        {plan.setup && (
+                          <p className="text-gray-600 dark:text-gray-300 font-semibold">
+                            {t("pricing.setup")}
                           </p>
                         )}
-                        {plan.setup && plan.yearlyPrice && (
-                          <p className="text-lg text-center font-semibold text-gray-600 dark:text-gray-400">
-                            أو
+                        {!plan.setup && (
+                          <div className="flex items-baseline justify-center gap-2">
+                            <span className="text-4xl font-bold text-gray-900 dark:text-white">
+                              {plan.price}
+                            </span>
+                            <span className="text-lg text-gray-600 dark:text-gray-300">
+                              {t("pricing.currency")}
+                            </span>
+                          </div>
+                        )}
+                        {!plan.setup && (
+                          <p className="text-gray-600 dark:text-gray-300 font-semibold">
+                            {getCurrentPeriod(plan)}
                           </p>
                         )}
-                        {plan.yearlyPrice && (
-                          <p className="text-lg text-green-600 dark:text-green-400 font-semibold">
-                            {t("pricing.yearly")}: {plan.yearlyPrice}{" "}
-                            {t("pricing.currency")}
-                          </p>
+                        {plan.setup && (
+                          <div className="text-center">
+                            <div className="text-lg font-semibold text-gray-900 dark:text-white">
+                              + {plan.price}{t("pricing.currency")} {getCurrentPeriod(plan)}
+                              {plan.yearlyPrice && (
+                                <span className="text-lg font-semibold text-gray-900 dark:text-white">
+                                  {" "}أو {t("pricing.yearly")}: {plan.yearlyPrice}{" "}
+                                  {t("pricing.currency")}
+                                </span>
+                              )}
+                            </div>
+                          </div>
                         )}
                       </div>
                     </CardHeader>

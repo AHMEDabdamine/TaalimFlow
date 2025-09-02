@@ -101,8 +101,7 @@ export function Header() {
     {
       key: "pricing",
       id: "pricing-section",
-      path: "/pricing",
-      isPage: true,
+      path: "/",
       icon: Sparkles,
       highlight: true,
     },
@@ -116,11 +115,8 @@ export function Header() {
   ];
 
   const handleNavigation = (item) => {
-    if (item.isPage) {
-      setIsMenuOpen(false);
-      return;
-    }
-
+    setIsMenuOpen(false);
+    
     if (location.pathname !== "/") {
       window.location.href = `/#${item.id}`;
     } else {
@@ -129,9 +125,6 @@ export function Header() {
   };
 
   const isActive = (item) => {
-    if (item.isPage) {
-      return location.pathname === item.path;
-    }
     return activeSection === item.id;
   };
 
@@ -173,10 +166,10 @@ export function Header() {
               const isItemActive = isActive(item);
               const IconComponent = item.icon;
 
-              return item.isPage ? (
-                <Link
+              return item.highlight ? (
+                <button
                   key={item.key}
-                  to={item.path}
+                  onClick={() => handleNavigation(item)}
                   className={`relative px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 group ${
                     item.highlight
                       ? "bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl hover:scale-105"
@@ -189,7 +182,7 @@ export function Header() {
                     {IconComponent && <IconComponent className="w-4 h-4" />}
                     <span>{t(`header.${item.key}`)}</span>
                   </div>
-                </Link>
+                </button>
               ) : (
                 <button
                   key={item.key}
@@ -263,41 +256,7 @@ export function Header() {
               const isItemActive = isActive(item);
               const IconComponent = item.icon;
 
-              return item.isPage ? (
-                <Link
-                  key={item.key}
-                  to={item.path}
-                  onClick={() => setIsMenuOpen(false)}
-                  className={`flex items-center justify-between w-full px-4 py-3 rounded-xl text-left font-medium transition-all duration-300 transform ${
-                    item.highlight
-                      ? "bg-blue-600 hover:bg-blue-700 text-white shadow-lg"
-                      : isItemActive
-                      ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
-                      : "text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800/50"
-                  }`}
-                  style={{ animationDelay: `${index * 50}ms` }}
-                >
-                  <div className={`flex items-center ${
-                    isRTL ? "space-x-reverse space-x-3" : "space-x-3"
-                  }`}>
-                    {IconComponent && (
-                      <div
-                        className={`p-2 rounded-lg ${
-                          item.highlight
-                            ? "bg-white/20"
-                            : "bg-gray-100 dark:bg-gray-800"
-                        }`}
-                      >
-                        <IconComponent className="w-4 h-4" />
-                      </div>
-                    )}
-                    <span>{t(`header.${item.key}`)}</span>
-                  </div>
-                  {item.highlight && (
-                    <Sparkles className="w-4 h-4 opacity-70" />
-                  )}
-                </Link>
-              ) : (
+              return (
                 <button
                   key={item.key}
                   onClick={() => handleNavigation(item)}
