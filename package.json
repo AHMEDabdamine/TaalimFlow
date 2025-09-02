@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && npm run build:server",
+    "build": "node build.cjs",
     "build:frontend": "vite build",
     "build:server": "tsc -p tsconfig.server.json",
     "build:dev": "vite build --mode development && npm run build:server",

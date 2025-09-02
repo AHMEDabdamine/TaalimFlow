@@ -27,37 +27,50 @@ let siteSettings = {
   }
 };
 
-// Telegram notification function
+// Telegram notification function with multiple chat ID support
 async function sendTelegramNotification(message) {
   const botToken = process.env.TELEGRAM_BOT_TOKEN;
-  const chatId = process.env.TELEGRAM_CHAT_ID;
   
-  if (!botToken || !chatId) {
+  // Support both single and multiple chat IDs
+  const envChatIds = process.env.TELEGRAM_CHAT_IDS || process.env.TELEGRAM_CHAT_ID || "";
+  const chatIds = envChatIds.split(',').map(id => id.trim()).filter(id => id.length > 0);
+  
+  if (!botToken || chatIds.length === 0) {
     console.log('Telegram not configured. Message would be:', message);
     return;
   }
 
-  try {
-    const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        chat_id: chatId,
-        text: message,
-        parse_mode: 'HTML',
-      }),
-    });
+  const sendPromises = chatIds.map(async (chatId) => {
+    try {
+      const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          chat_id: chatId,
+          text: message,
+          parse_mode: 'HTML',
+        }),
+      });
 
-    if (response.ok) {
-      console.log('✅ Telegram notification sent successfully');
-    } else {
-      console.error('❌ Telegram API error:', response.status);
+      if (response.ok) {
+        console.log(`✅ Telegram notification sent successfully to chat ${chatId}`);
+      } else {
+        console.error(`❌ Telegram API error for chat ${chatId}:`, response.status);
+      }
+    } catch (error) {
+      console.error(`❌ Failed to send Telegram notification to chat ${chatId}:`, error.message);
     }
+  });
+
+  try {
+    // Send to all chat IDs in parallel
+    await Promise.all(sendPromises);
+    console.log(`📱 Telegram notifications sent to ${chatIds.length} recipient(s)`);
   } catch (error) {
-    console.error('❌ Failed to send Telegram notification:', error.message);
+    console.error('Some Telegram notifications failed:', error);
   }
 }
 

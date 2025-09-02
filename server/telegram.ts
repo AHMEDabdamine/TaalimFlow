@@ -10,7 +10,7 @@ export class TelegramBotService implements TelegramService {
 
   constructor(botToken?: string, chatIds?: string | string[]) {
     this.botToken = botToken || process.env.TELEGRAM_BOT_TOKEN || "";
-
+    
     // Support both single chat ID and multiple chat IDs
     if (Array.isArray(chatIds)) {
       this.chatIds = chatIds;
@@ -18,12 +18,8 @@ export class TelegramBotService implements TelegramService {
       this.chatIds = [chatIds];
     } else {
       // Check for multiple chat IDs in environment (comma-separated)
-      const envChatIds =
-        process.env.TELEGRAM_CHAT_IDS || process.env.TELEGRAM_CHAT_ID || "";
-      this.chatIds = envChatIds
-        .split(",")
-        .map((id) => id.trim())
-        .filter((id) => id.length > 0);
+      const envChatIds = process.env.TELEGRAM_CHAT_IDS || process.env.TELEGRAM_CHAT_ID || "";
+      this.chatIds = envChatIds.split(',').map(id => id.trim()).filter(id => id.length > 0);
     }
   }
 
@@ -54,14 +50,9 @@ export class TelegramBotService implements TelegramService {
           throw new Error(`Telegram API error: ${response.status}`);
         }
 
-        console.log(
-          `Telegram notification sent successfully to chat ${chatId}`
-        );
+        console.log(`Telegram notification sent successfully to chat ${chatId}`);
       } catch (error) {
-        console.error(
-          `Failed to send Telegram notification to chat ${chatId}:`,
-          error
-        );
+        console.error(`Failed to send Telegram notification to chat ${chatId}:`, error);
         throw error;
       }
     });
@@ -69,9 +60,7 @@ export class TelegramBotService implements TelegramService {
     try {
       // Send to all chat IDs in parallel
       await Promise.all(sendPromises);
-      console.log(
-        `Telegram notifications sent successfully to ${this.chatIds.length} recipient(s)`
-      );
+      console.log(`Telegram notifications sent successfully to ${this.chatIds.length} recipient(s)`);
     } catch (error) {
       // If any fail, we still want to know about partial success
       console.error("Some Telegram notifications failed:", error);
@@ -100,12 +89,8 @@ export class TelegramBotService implements TelegramService {
 📧 <b>Email:</b> ${request.email}
 📱 <b>Téléphone/Phone:</b> ${request.phone || "Non fourni/Not provided"}
 🏫 <b>École/School:</b> ${request.schoolName || "Non fourni/Not provided"}
-🏷️ <b>Type d'école/School Type:</b> ${
-      request.schoolType || "Non fourni/Not provided"
-    }
-👥 <b>Nombre d'étudiants/Students:</b> ${
-      request.numberOfStudents || "Non fourni/Not provided"
-    }
+🏷️ <b>Type d'école/School Type:</b> ${request.schoolType || "Non fourni/Not provided"}
+👥 <b>Nombre d'étudiants/Students:</b> ${request.numberOfStudents || "Non fourni/Not provided"}
 🕐 <b>Soumis le/Submitted at:</b> ${new Date().toLocaleString("fr-FR")}
     `.trim();
   }
