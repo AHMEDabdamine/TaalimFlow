@@ -10,7 +10,7 @@ export class TelegramBotService implements TelegramService {
 
   constructor(botToken?: string, chatIds?: string | string[]) {
     this.botToken = botToken || process.env.TELEGRAM_BOT_TOKEN || "";
-    
+
     // Support both single chat ID and multiple chat IDs
     if (Array.isArray(chatIds)) {
       this.chatIds = chatIds;
@@ -18,8 +18,12 @@ export class TelegramBotService implements TelegramService {
       this.chatIds = [chatIds];
     } else {
       // Check for multiple chat IDs in environment (comma-separated)
-      const envChatIds = process.env.TELEGRAM_CHAT_IDS || process.env.TELEGRAM_CHAT_ID || "";
-      this.chatIds = envChatIds.split(',').map(id => id.trim()).filter(id => id.length > 0);
+      const envChatIds =
+        process.env.TELEGRAM_CHAT_IDS || process.env.TELEGRAM_CHAT_ID || "";
+      this.chatIds = envChatIds
+        .split(",")
+        .map((id) => id.trim())
+        .filter((id) => id.length > 0);
     }
   }
 
@@ -50,9 +54,14 @@ export class TelegramBotService implements TelegramService {
           throw new Error(`Telegram API error: ${response.status}`);
         }
 
-        console.log(`Telegram notification sent successfully to chat ${chatId}`);
+        console.log(
+          `Telegram notification sent successfully to chat ${chatId}`
+        );
       } catch (error) {
-        console.error(`Failed to send Telegram notification to chat ${chatId}:`, error);
+        console.error(
+          `Failed to send Telegram notification to chat ${chatId}:`,
+          error
+        );
         throw error;
       }
     });
@@ -60,7 +69,9 @@ export class TelegramBotService implements TelegramService {
     try {
       // Send to all chat IDs in parallel
       await Promise.all(sendPromises);
-      console.log(`Telegram notifications sent successfully to ${this.chatIds.length} recipient(s)`);
+      console.log(
+        `Telegram notifications sent successfully to ${this.chatIds.length} recipient(s)`
+      );
     } catch (error) {
       // If any fail, we still want to know about partial success
       console.error("Some Telegram notifications failed:", error);
@@ -70,28 +81,38 @@ export class TelegramBotService implements TelegramService {
 
   formatContactSubmission(submission: any): string {
     return `
-🆕 <b>Nouvelle soumission de contact / New Contact Submission</b>
-
-👤 <b>Nom/Name:</b> ${submission.name}
-📧 <b>Email:</b> ${submission.email}
-📱 <b>Téléphone/Phone:</b> ${submission.phone || "Non fourni/Not provided"}
-🏫 <b>École/School:</b> ${submission.schoolName || "Non fourni/Not provided"}
-💬 <b>Message:</b> ${submission.message || "Aucun message/No message"}
-🕐 <b>Soumis le/Submitted at:</b> ${new Date().toLocaleString("fr-FR")}
+🆕 <b>طلب تواصل جديد / Nouvelle soumission de contact / New Contact Submission</b>
+👤 <b>الاسم / Nom / Name:</b> ${submission.name}
+📧 <b>البريد الإلكتروني / Email:</b> ${submission.email}
+📱 <b>الهاتف / Téléphone / Phone:</b> ${
+      submission.phone || "غير مُقدم / Non fourni / Not provided"
+    }
+🏫 <b>المدرسة / École / School:</b> ${
+      submission.schoolName || "غير مُقدم / Non fourni / Not provided"
+    }
+💬 <b>الرسالة / Message:</b> ${
+      submission.message || "لا توجد رسالة / Aucun message / No message"
+    }
+🕐 <b>تم الإرسال في / Soumis le / Submitted at:</b> ${new Date().toLocaleString(
+      "ar-SA"
+    )}
     `.trim();
   }
 
   formatDemoRequest(request: any): string {
     return `
-🎯 <b>Nouvelle demande de démonstration / New Demo Request</b>
-
-👤 <b>Nom/Name:</b> ${request.name}
-📧 <b>Email:</b> ${request.email}
-📱 <b>Téléphone/Phone:</b> ${request.phone || "Non fourni/Not provided"}
-🏫 <b>École/School:</b> ${request.schoolName || "Non fourni/Not provided"}
-🏷️ <b>Type d'école/School Type:</b> ${request.schoolType || "Non fourni/Not provided"}
-👥 <b>Nombre d'étudiants/Students:</b> ${request.numberOfStudents || "Non fourni/Not provided"}
-🕐 <b>Soumis le/Submitted at:</b> ${new Date().toLocaleString("fr-FR")}
+🎯 <b>طلب عرض توضيحي جديد / New Demo Request</b>
+👤 <b>الاسم / Name:</b> ${request.name}
+📧 <b>البريد الإلكتروني / Email:</b> ${request.email}
+📱 <b>الهاتف / Phone:</b> ${request.phone || "غير مُقدم / Not provided"}
+🏫 <b>المدرسة / School:</b> ${request.schoolName || "غير مُقدم / Not provided"}
+🏷️ <b>نوع المدرسة / School Type:</b> ${
+      request.schoolType || "غير مُقدم / Not provided"
+    }
+👥 <b>عدد الطلاب / Students:</b> ${
+      request.numberOfStudents || "غير مُقدم / Not provided"
+    }
+🕐 <b>تم الإرسال في / Submitted at:</b> ${new Date().toLocaleString("ar-SA")}
     `.trim();
   }
 }

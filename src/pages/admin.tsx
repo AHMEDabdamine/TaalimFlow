@@ -32,6 +32,7 @@ import {
   Facebook,
   DollarSign,
   Save,
+  Trash2,
 } from "lucide-react";
 import {
   Table,
@@ -103,9 +104,7 @@ const AdminPasswordPrompt = ({
           <CardTitle className="text-xl font-bold">
             {t("admin.title")}
           </CardTitle>
-          <CardDescription>
-            {t("admin.description")}
-          </CardDescription>
+          <CardDescription>{t("admin.description")}</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -157,11 +156,16 @@ const AdminDashboard = () => {
     pricing: {
       basic: "5000 DA/month",
       premium: "10000 DA/month",
-      enterprise: "Contact us"
-    }
+      enterprise: "Contact us",
+    },
   });
   const [isLoadingSettings, setIsLoadingSettings] = useState(false);
-  const [updatingStatus, setUpdatingStatus] = useState<{[key: string]: boolean}>({});
+  const [updatingStatus, setUpdatingStatus] = useState<{
+    [key: string]: boolean;
+  }>({});
+  const [deletingItem, setDeletingItem] = useState<{ [key: string]: boolean }>(
+    {}
+  );
 
   // Check if user is already authenticated
   useEffect(() => {
@@ -178,8 +182,8 @@ const AdminDashboard = () => {
     setError("");
     try {
       const [contactResponse, demoResponse] = await Promise.all([
-        fetch('/api/admin/contact-submissions'),
-        fetch('/api/admin/demo-requests')
+        fetch("/api/admin/contact-submissions"),
+        fetch("/api/admin/demo-requests"),
       ]);
 
       if (contactResponse.ok) {
@@ -195,7 +199,7 @@ const AdminDashboard = () => {
           status: item.status,
           source: "contact_form",
           created_at: item.submittedAt,
-          is_read: item.isRead === "true"
+          is_read: item.isRead === "true",
         }));
         setSubmissions(formattedContacts);
       }
@@ -209,11 +213,13 @@ const AdminDashboard = () => {
           email: item.email,
           phone: item.phone,
           school_name: item.schoolName,
-          message: `Demo Request - School Type: ${item.schoolType || 'N/A'}, Students: ${item.numberOfStudents || 'N/A'}`,
+          message: `Demo Request - School Type: ${
+            item.schoolType || "N/A"
+          }, Students: ${item.numberOfStudents || "N/A"}`,
           status: item.status,
           source: "demo_request",
           created_at: item.submittedAt,
-          is_read: item.isRead === "true"
+          is_read: item.isRead === "true",
         }));
         setDemoRequests(formattedDemos);
       }
@@ -228,33 +234,42 @@ const AdminDashboard = () => {
   // Fetch settings from backend
   const fetchSettings = async () => {
     try {
-      const response = await fetch('/api/admin/settings');
+      const response = await fetch("/api/admin/settings");
       if (response.ok) {
         const data = await response.json();
-        setSettings(data);
+        setSettings((prev) => ({ ...prev, ...data }));
       } else {
-        console.log('Using default settings as backend is not responding');
+        console.log("Using default settings as backend is not responding");
       }
     } catch (error) {
-      console.error('Error fetching settings:', error);
-      console.log('Using default settings');
+      console.error("Error fetching settings:", error);
+      console.log("Using default settings");
     }
   };
 
   // Update submission status
-  const updateStatus = async (leadId: number, source: string, newStatus: string) => {
+  const updateStatus = async (
+    leadId: number,
+    source: string,
+    newStatus: string
+  ) => {
     const key = `${source}-${leadId}`;
-    setUpdatingStatus(prev => ({ ...prev, [key]: true }));
-    
+    setUpdatingStatus((prev) => ({ ...prev, [key]: true }));
+
     try {
       // Determine the correct endpoint based on source
-      const endpoint = source === 'contact_form' ? '/api/admin/contact-submissions' : '/api/admin/demo-requests';
-      console.log(`Updating status for ${source} item ${leadId} to ${newStatus}`);
-      
+      const endpoint =
+        source === "contact_form"
+          ? "/api/admin/contact-submissions"
+          : "/api/admin/demo-requests";
+      console.log(
+        `Updating status for ${source} item ${leadId} to ${newStatus}`
+      );
+
       const response = await fetch(`${endpoint}/${leadId}/status`, {
-        method: 'PATCH',
+        method: "PATCH",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ status: newStatus }),
       });
@@ -265,25 +280,29 @@ const AdminDashboard = () => {
 
       const result = await response.json();
       if (result.success) {
-        console.log('✅ Status updated successfully');
+        console.log("✅ Status updated successfully");
         // Update local state
-        if (source === 'contact_form') {
-          setSubmissions(prev => prev.map(sub => 
-            sub.id === leadId ? { ...sub, status: newStatus } : sub
-          ));
-        } else if (source === 'demo_request') {
-          setDemoRequests(prev => prev.map(req => 
-            req.id === leadId ? { ...req, status: newStatus } : req
-          ));
+        if (source === "contact_form") {
+          setSubmissions((prev) =>
+            prev.map((sub) =>
+              sub.id === leadId ? { ...sub, status: newStatus } : sub
+            )
+          );
+        } else if (source === "demo_request") {
+          setDemoRequests((prev) =>
+            prev.map((req) =>
+              req.id === leadId ? { ...req, status: newStatus } : req
+            )
+          );
         }
       } else {
-        throw new Error(result.message || 'Failed to update status');
+        throw new Error(result.message || "Failed to update status");
       }
     } catch (error) {
-      console.error('❌ Error updating status:', error);
+      console.error("❌ Error updating status:", error);
       alert(`Failed to update status: ${error.message}`);
     } finally {
-      setUpdatingStatus(prev => ({ ...prev, [key]: false }));
+      setUpdatingStatus((prev) => ({ ...prev, [key]: false }));
     }
   };
 
@@ -291,26 +310,75 @@ const AdminDashboard = () => {
   const saveSettings = async () => {
     setIsLoadingSettings(true);
     try {
-      const response = await fetch('/api/admin/settings', {
-        method: 'POST',
+      const response = await fetch("/api/admin/settings", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(settings),
       });
 
       const result = await response.json();
       if (response.ok && result.success) {
-        console.log('✅ Settings saved successfully');
-        alert('Settings saved successfully!');
+        console.log("✅ Settings saved successfully");
+        alert("Settings saved successfully!");
       } else {
-        throw new Error(result.message || 'Failed to save settings');
+        throw new Error(result.message || "Failed to save settings");
       }
     } catch (error) {
-      console.error('❌ Error saving settings:', error);
-      alert('Failed to save settings. Backend server may not be running.');
+      console.error("❌ Error saving settings:", error);
+      alert("Failed to save settings. Backend server may not be running.");
     } finally {
       setIsLoadingSettings(false);
+    }
+  };
+
+  // Delete submission or demo request
+  const deleteRecord = async (leadId: number, source: string) => {
+    const key = `${source}-${leadId}`;
+
+    if (
+      !confirm(
+        "Are you sure you want to delete this record? This action cannot be undone."
+      )
+    ) {
+      return;
+    }
+
+    setDeletingItem((prev) => ({ ...prev, [key]: true }));
+
+    try {
+      const endpoint =
+        source === "contact_form"
+          ? "/api/admin/contact-submissions"
+          : "/api/admin/demo-requests";
+      console.log(`Deleting ${source} item ${leadId}`);
+
+      const response = await fetch(`${endpoint}/${leadId}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const result = await response.json();
+      if (result.success) {
+        console.log("✅ Record deleted successfully");
+        // Update local state
+        if (source === "contact_form") {
+          setSubmissions((prev) => prev.filter((sub) => sub.id !== leadId));
+        } else if (source === "demo_request") {
+          setDemoRequests((prev) => prev.filter((req) => req.id !== leadId));
+        }
+      } else {
+        throw new Error(result.message || "Failed to delete record");
+      }
+    } catch (error) {
+      console.error("❌ Error deleting record:", error);
+      alert(`Failed to delete record: ${error.message}`);
+    } finally {
+      setDeletingItem((prev) => ({ ...prev, [key]: false }));
     }
   };
 
@@ -337,23 +405,38 @@ const AdminDashboard = () => {
 
   const getStatusBadge = (status: string) => {
     const statusConfig = {
-      new: { label: t("admin.status.new"), color: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300" },
-      contacted: { label: t("admin.status.contacted"), color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300" },
-      qualified: { label: t("admin.status.qualified"), color: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300" },
-      closed: { label: t("admin.status.closed"), color: "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300" },
+      new: {
+        label: t("admin.status.new"),
+        color: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300",
+      },
+      contacted: {
+        label: t("admin.status.contacted"),
+        color:
+          "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300",
+      },
+      qualified: {
+        label: t("admin.status.qualified"),
+        color:
+          "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
+      },
+      closed: {
+        label: t("admin.status.closed"),
+        color: "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300",
+      },
     };
-    
-    const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.new;
-    return (
-      <Badge className={config.color}>
-        {config.label}
-      </Badge>
-    );
+
+    const config =
+      statusConfig[status as keyof typeof statusConfig] || statusConfig.new;
+    return <Badge className={config.color}>{config.label}</Badge>;
   };
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString(
-      i18n.language === "ar" ? "ar-DZ" : i18n.language === "fr" ? "fr-FR" : "en-US",
+      i18n.language === "ar"
+        ? "ar-DZ"
+        : i18n.language === "fr"
+        ? "fr-FR"
+        : "en-US",
       {
         year: "numeric",
         month: "short",
@@ -383,7 +466,7 @@ const AdminDashboard = () => {
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2">{t("admin.title")}</h1>
           <p className="text-muted-foreground">{t("admin.description")}</p>
-          
+
           {/* Loading/Error States */}
           {isLoadingData && (
             <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
@@ -416,7 +499,9 @@ const AdminDashboard = () => {
                   <p className="text-sm font-medium text-muted-foreground">
                     {t("admin.stats.totalLeads")}
                   </p>
-                  <p className="text-2xl font-bold">{submissions.length + demoRequests.length}</p>
+                  <p className="text-2xl font-bold">
+                    {submissions.length + demoRequests.length}
+                  </p>
                 </div>
                 <Users className="w-8 h-8 text-muted-foreground" />
               </div>
@@ -431,7 +516,11 @@ const AdminDashboard = () => {
                     {t("admin.stats.newLeads")}
                   </p>
                   <p className="text-2xl font-bold">
-                    {[...submissions, ...demoRequests].filter(lead => lead.status === "new").length}
+                    {
+                      [...submissions, ...demoRequests].filter(
+                        (lead) => lead.status === "new"
+                      ).length
+                    }
                   </p>
                 </div>
                 <MessageSquare className="w-8 h-8 text-muted-foreground" />
@@ -447,7 +536,11 @@ const AdminDashboard = () => {
                     {t("admin.stats.contacted")}
                   </p>
                   <p className="text-2xl font-bold">
-                    {[...submissions, ...demoRequests].filter(lead => lead.status === "contacted").length}
+                    {
+                      [...submissions, ...demoRequests].filter(
+                        (lead) => lead.status === "contacted"
+                      ).length
+                    }
                   </p>
                 </div>
                 <Phone className="w-8 h-8 text-muted-foreground" />
@@ -463,10 +556,14 @@ const AdminDashboard = () => {
                     {t("admin.stats.today")}
                   </p>
                   <p className="text-2xl font-bold">
-                    {[...submissions, ...demoRequests].filter(lead => {
-                      const today = new Date().toDateString();
-                      return new Date(lead.created_at).toDateString() === today;
-                    }).length}
+                    {
+                      [...submissions, ...demoRequests].filter((lead) => {
+                        const today = new Date().toDateString();
+                        return (
+                          new Date(lead.created_at).toDateString() === today
+                        );
+                      }).length
+                    }
                   </p>
                 </div>
                 <Calendar className="w-8 h-8 text-muted-foreground" />
@@ -476,10 +573,13 @@ const AdminDashboard = () => {
         </div>
 
         {/* Admin Tabs */}
-        <div className="w-full max-w-7xl mx-auto">
+        <div className="w-full mx-auto">
           <Tabs defaultValue="submissions" className="w-full">
             <TabsList className="grid w-full grid-cols-2 mb-6">
-              <TabsTrigger value="submissions" className="flex items-center gap-2">
+              <TabsTrigger
+                value="submissions"
+                className="flex items-center gap-2"
+              >
                 <Users className="w-4 h-4" />
                 Form Submissions
               </TabsTrigger>
@@ -488,232 +588,337 @@ const AdminDashboard = () => {
                 Settings
               </TabsTrigger>
             </TabsList>
-          
-          <TabsContent value="submissions" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Users className="w-5 h-5" />
-                  Form Submissions
-                </CardTitle>
-                <CardDescription>
-                  Contact forms and demo requests from your website
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="rounded-md border overflow-hidden">
-                  <div className="overflow-x-auto">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead className="min-w-[120px]">Name</TableHead>
-                          <TableHead className="min-w-[200px]">Email</TableHead>
-                          <TableHead className="min-w-[150px]">School</TableHead>
-                          <TableHead className="min-w-[120px]">Phone</TableHead>
-                          <TableHead className="min-w-[150px]">Status</TableHead>
-                          <TableHead className="min-w-[120px]">Date</TableHead>
-                          <TableHead className="min-w-[200px]">Message</TableHead>
-                          <TableHead className="min-w-[100px]">Actions</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {[...submissions, ...demoRequests].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()).map((lead) => {
-                          const key = `${lead.source}-${lead.id}`;
-                          const isUpdating = updatingStatus[key];
-                          return (
-                            <TableRow key={key}>
-                              <TableCell className="font-medium">{lead.name}</TableCell>
-                              <TableCell className="break-all">{lead.email}</TableCell>
-                              <TableCell>{lead.school_name || 'N/A'}</TableCell>
-                              <TableCell>{lead.phone || 'N/A'}</TableCell>
-                              <TableCell>
-                                <div className="flex items-center gap-2">
-                                  {getStatusBadge(lead.status)}
-                                </div>
-                              </TableCell>
-                              <TableCell className="whitespace-nowrap">{formatDate(lead.created_at)}</TableCell>
-                              <TableCell>
-                                <div className="max-w-xs">
-                                  <p className="truncate" title={lead.message || 'N/A'}>
-                                    {lead.message || 'N/A'}
-                                  </p>
-                                </div>
-                              </TableCell>
-                              <TableCell>
-                                <Select
-                                  value={lead.status}
-                                  onValueChange={(newStatus) => updateStatus(lead.id, lead.source, newStatus)}
-                                  disabled={isUpdating}
-                                >
-                                  <SelectTrigger className="w-full">
-                                    <SelectValue>
-                                      {isUpdating ? (
-                                        <div className="flex items-center gap-2">
-                                          <Loader2 className="h-3 w-3 animate-spin" />
-                                          <span className="text-xs">Updating...</span>
-                                        </div>
-                                      ) : (
-                                        lead.status
-                                      )}
-                                    </SelectValue>
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="new">New</SelectItem>
-                                    <SelectItem value="contacted">Contacted</SelectItem>
-                                    <SelectItem value="in_progress">In Progress</SelectItem>
-                                    <SelectItem value="converted">Converted</SelectItem>
-                                    <SelectItem value="closed">Closed</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              </TableCell>
-                            </TableRow>
-                          );
-                        })}
-                      </TableBody>
-                    </Table>
-                    {[...submissions, ...demoRequests].length === 0 && (
-                      <div className="text-center py-8 text-muted-foreground">
-                        No submissions yet
+
+            <TabsContent value="submissions" className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Users className="w-5 h-5" />
+                    Form Submissions
+                  </CardTitle>
+                  <CardDescription>
+                    Contact forms and demo requests from your website
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="rounded-md border overflow-hidden">
+                    <div className="overflow-x-auto">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead className="min-w-[120px]">
+                              Name
+                            </TableHead>
+                            <TableHead className="min-w-[200px]">
+                              Email
+                            </TableHead>
+                            <TableHead className="min-w-[150px]">
+                              School
+                            </TableHead>
+                            <TableHead className="min-w-[120px]">
+                              Phone
+                            </TableHead>
+                            <TableHead className="min-w-[150px]">
+                              Status
+                            </TableHead>
+                            <TableHead className="min-w-[120px]">
+                              Date
+                            </TableHead>
+                            <TableHead className="min-w-[200px]">
+                              Message
+                            </TableHead>
+                            <TableHead className="min-w-[180px]">
+                              Actions
+                            </TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {[...submissions, ...demoRequests]
+                            .sort(
+                              (a, b) =>
+                                new Date(b.created_at).getTime() -
+                                new Date(a.created_at).getTime()
+                            )
+                            .map((lead) => {
+                              const key = `${lead.source}-${lead.id}`;
+                              const isUpdating = updatingStatus[key];
+                              return (
+                                <TableRow key={key}>
+                                  <TableCell className="font-medium">
+                                    {lead.name}
+                                  </TableCell>
+                                  <TableCell className="break-all">
+                                    {lead.email}
+                                  </TableCell>
+                                  <TableCell>
+                                    {lead.school_name || "N/A"}
+                                  </TableCell>
+                                  <TableCell>{lead.phone || "N/A"}</TableCell>
+                                  <TableCell>
+                                    <div className="flex items-center gap-2">
+                                      {getStatusBadge(lead.status)}
+                                    </div>
+                                  </TableCell>
+                                  <TableCell className="whitespace-nowrap">
+                                    {formatDate(lead.created_at)}
+                                  </TableCell>
+                                  <TableCell>
+                                    <div className="max-w-xs">
+                                      <p
+                                        className="truncate"
+                                        title={lead.message || "N/A"}
+                                      >
+                                        {lead.message || "N/A"}
+                                      </p>
+                                    </div>
+                                  </TableCell>
+                                  <TableCell>
+                                    <div className="flex items-center gap-2">
+                                      <Select
+                                        value={lead.status}
+                                        onValueChange={(newStatus) =>
+                                          updateStatus(
+                                            lead.id,
+                                            lead.source,
+                                            newStatus
+                                          )
+                                        }
+                                        disabled={isUpdating}
+                                      >
+                                        <SelectTrigger className="w-28">
+                                          <SelectValue>
+                                            {isUpdating ? (
+                                              <div className="flex items-center gap-2">
+                                                <Loader2 className="h-3 w-3 animate-spin" />
+                                                <span className="text-xs">
+                                                  Updating...
+                                                </span>
+                                              </div>
+                                            ) : (
+                                              lead.status
+                                            )}
+                                          </SelectValue>
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                          <SelectItem value="new">
+                                            New
+                                          </SelectItem>
+                                          <SelectItem value="contacted">
+                                            Contacted
+                                          </SelectItem>
+                                          <SelectItem value="in_progress">
+                                            In Progress
+                                          </SelectItem>
+                                          <SelectItem value="converted">
+                                            Converted
+                                          </SelectItem>
+                                          <SelectItem value="closed">
+                                            Closed
+                                          </SelectItem>
+                                        </SelectContent>
+                                      </Select>
+
+                                      <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() =>
+                                          deleteRecord(lead.id, lead.source)
+                                        }
+                                        disabled={deletingItem[key]}
+                                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                        data-testid={`button-delete-${lead.id}`}
+                                      >
+                                        {deletingItem[key] ? (
+                                          <Loader2 className="h-4 w-4 animate-spin" />
+                                        ) : (
+                                          <Trash2 className="h-4 w-4" />
+                                        )}
+                                      </Button>
+                                    </div>
+                                  </TableCell>
+                                </TableRow>
+                              );
+                            })}
+                        </TableBody>
+                      </Table>
+                      {[...submissions, ...demoRequests].length === 0 && (
+                        <div className="text-center py-8 text-muted-foreground">
+                          No submissions yet
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="settings" className="space-y-4">
+              <div className="grid gap-6">
+                {/* Contact Information Settings */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Mail className="w-5 h-5" />
+                      Contact Information
+                    </CardTitle>
+                    <CardDescription>
+                      Update your contact details displayed on the website
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="contactEmail">Email Address</Label>
+                        <Input
+                          id="contactEmail"
+                          value={settings.contactEmail}
+                          onChange={(e) =>
+                            setSettings((prev) => ({
+                              ...prev,
+                              contactEmail: e.target.value,
+                            }))
+                          }
+                          placeholder="contact@taalimflow.com"
+                        />
                       </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="contactPhone">Phone Number</Label>
+                        <Input
+                          id="contactPhone"
+                          value={settings.contactPhone}
+                          onChange={(e) =>
+                            setSettings((prev) => ({
+                              ...prev,
+                              contactPhone: e.target.value,
+                            }))
+                          }
+                          placeholder="+213 555 123 456"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="instagram">Instagram Handle</Label>
+                        <div className="flex items-center space-x-2">
+                          <Instagram className="w-4 h-4 text-muted-foreground" />
+                          <Input
+                            id="instagram"
+                            value={settings.instagram}
+                            onChange={(e) =>
+                              setSettings((prev) => ({
+                                ...prev,
+                                instagram: e.target.value,
+                              }))
+                            }
+                            placeholder="@taalimflow"
+                          />
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="facebook">Facebook Page</Label>
+                        <div className="flex items-center space-x-2">
+                          <Facebook className="w-4 h-4 text-muted-foreground" />
+                          <Input
+                            id="facebook"
+                            value={settings.facebook}
+                            onChange={(e) =>
+                              setSettings((prev) => ({
+                                ...prev,
+                                facebook: e.target.value,
+                              }))
+                            }
+                            placeholder="TaalimFlow"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Pricing Settings */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <DollarSign className="w-5 h-5" />
+                      Pricing Plans
+                    </CardTitle>
+                    <CardDescription>
+                      Manage your subscription pricing displayed on the website
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="basicPrice">Basic Plan</Label>
+                        <Input
+                          id="basicPrice"
+                          value={settings.pricing.basic}
+                          onChange={(e) =>
+                            setSettings((prev) => ({
+                              ...prev,
+                              pricing: {
+                                ...prev.pricing,
+                                basic: e.target.value,
+                              },
+                            }))
+                          }
+                          placeholder="5000 DA/month"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="premiumPrice">Premium Plan</Label>
+                        <Input
+                          id="premiumPrice"
+                          value={settings.pricing.premium}
+                          onChange={(e) =>
+                            setSettings((prev) => ({
+                              ...prev,
+                              pricing: {
+                                ...prev.pricing,
+                                premium: e.target.value,
+                              },
+                            }))
+                          }
+                          placeholder="10000 DA/month"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="enterprisePrice">Enterprise Plan</Label>
+                        <Input
+                          id="enterprisePrice"
+                          value={settings.pricing.enterprise}
+                          onChange={(e) =>
+                            setSettings((prev) => ({
+                              ...prev,
+                              pricing: {
+                                ...prev.pricing,
+                                enterprise: e.target.value,
+                              },
+                            }))
+                          }
+                          placeholder="Contact us"
+                        />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Save Settings */}
+                <div className="flex justify-end">
+                  <Button
+                    onClick={saveSettings}
+                    disabled={isLoadingSettings}
+                    className="flex items-center gap-2"
+                  >
+                    {isLoadingSettings ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Save className="w-4 h-4" />
                     )}
-                  </div>
+                    Save Settings
+                  </Button>
                 </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-          
-          <TabsContent value="settings" className="space-y-4">
-            <div className="grid gap-6">
-              {/* Contact Information Settings */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Mail className="w-5 h-5" />
-                    Contact Information
-                  </CardTitle>
-                  <CardDescription>
-                    Update your contact details displayed on the website
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="contactEmail">Email Address</Label>
-                      <Input
-                        id="contactEmail"
-                        value={settings.contactEmail}
-                        onChange={(e) => setSettings(prev => ({ ...prev, contactEmail: e.target.value }))}
-                        placeholder="contact@taalimflow.com"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="contactPhone">Phone Number</Label>
-                      <Input
-                        id="contactPhone"
-                        value={settings.contactPhone}
-                        onChange={(e) => setSettings(prev => ({ ...prev, contactPhone: e.target.value }))}
-                        placeholder="+213 555 123 456"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="instagram">Instagram Handle</Label>
-                      <div className="flex items-center space-x-2">
-                        <Instagram className="w-4 h-4 text-muted-foreground" />
-                        <Input
-                          id="instagram"
-                          value={settings.instagram}
-                          onChange={(e) => setSettings(prev => ({ ...prev, instagram: e.target.value }))}
-                          placeholder="@taalimflow"
-                        />
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="facebook">Facebook Page</Label>
-                      <div className="flex items-center space-x-2">
-                        <Facebook className="w-4 h-4 text-muted-foreground" />
-                        <Input
-                          id="facebook"
-                          value={settings.facebook}
-                          onChange={(e) => setSettings(prev => ({ ...prev, facebook: e.target.value }))}
-                          placeholder="TaalimFlow"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-              
-              {/* Pricing Settings */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <DollarSign className="w-5 h-5" />
-                    Pricing Plans
-                  </CardTitle>
-                  <CardDescription>
-                    Manage your subscription pricing displayed on the website
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="basicPrice">Basic Plan</Label>
-                      <Input
-                        id="basicPrice"
-                        value={settings.pricing.basic}
-                        onChange={(e) => setSettings(prev => ({ 
-                          ...prev, 
-                          pricing: { ...prev.pricing, basic: e.target.value }
-                        }))}
-                        placeholder="5000 DA/month"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="premiumPrice">Premium Plan</Label>
-                      <Input
-                        id="premiumPrice"
-                        value={settings.pricing.premium}
-                        onChange={(e) => setSettings(prev => ({ 
-                          ...prev, 
-                          pricing: { ...prev.pricing, premium: e.target.value }
-                        }))}
-                        placeholder="10000 DA/month"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="enterprisePrice">Enterprise Plan</Label>
-                      <Input
-                        id="enterprisePrice"
-                        value={settings.pricing.enterprise}
-                        onChange={(e) => setSettings(prev => ({ 
-                          ...prev, 
-                          pricing: { ...prev.pricing, enterprise: e.target.value }
-                        }))}
-                        placeholder="Contact us"
-                      />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-              
-              {/* Save Settings */}
-              <div className="flex justify-end">
-                <Button 
-                  onClick={saveSettings}
-                  disabled={isLoadingSettings}
-                  className="flex items-center gap-2"
-                >
-                  {isLoadingSettings ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <Save className="w-4 h-4" />
-                  )}
-                  Save Settings
-                </Button>
               </div>
-            </div>
-          </TabsContent>
-        </Tabs>
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
     </div>
