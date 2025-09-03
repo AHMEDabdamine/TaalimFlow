@@ -1453,7 +1453,7 @@ const TaalimFlowLanding = () => {
                             clipRule="evenodd"
                           />
                         </svg>
-                        info@taalimflow.com
+                        contact@taalimflow.com
                       </a>
                     </div>
                   </div>
@@ -1475,10 +1475,10 @@ const TaalimFlowLanding = () => {
                     </div>
                     <div className="flex-1">
                       <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                        Facebook
+                        {t("contact.facebook")}
                       </h3>
                       <a
-                        href="https://facebook.com/taalimflow"
+                        href="https://www.facebook.com/TaalimFlow/"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105"
@@ -1490,7 +1490,7 @@ const TaalimFlowLanding = () => {
                         >
                           <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
                         </svg>
-                        تابعنا على فيسبوك
+                        {t("contact.followFacebook")}
                       </a>
                     </div>
                   </div>
@@ -1512,7 +1512,7 @@ const TaalimFlowLanding = () => {
                     </div>
                     <div className="flex-1">
                       <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                        Instagram
+                        {t("contact.instagram")}
                       </h3>
                       <a
                         href="https://instagram.com/taalimflow"
@@ -1527,7 +1527,7 @@ const TaalimFlowLanding = () => {
                         >
                           <path d="M12.017 0C8.396 0 7.929.013 6.71.072 5.493.131 4.73.333 4.058.63c-.68.3-1.277.703-1.86 1.286C1.616 2.5 1.213 3.097.913 3.777.616 4.449.414 5.212.355 6.429.296 7.648.283 8.115.283 11.736c0 3.621.013 4.088.072 5.307.059 1.217.261 1.98.558 2.652.3.68.703 1.277 1.286 1.86.583.583 1.18.986 1.86 1.286.672.297 1.435.499 2.652.558 1.219.059 1.686.072 5.307.072 3.621 0 4.088-.013 5.307-.072 1.217-.059 1.98-.261 2.652-.558.68-.3 1.277-.703 1.86-1.286.583-.583.986-1.18 1.286-1.86.297-.672.499-1.435.558-2.652.059-1.219.072-1.686.072-5.307 0-3.621-.013-4.088-.072-5.307-.059-1.217-.261-1.98-.558-2.652-.3-.68-.703-1.277-1.286-1.86C18.337.913 17.74.51 17.06.21 16.388-.087 15.625-.289 14.408-.348 13.189-.407 12.722-.42 9.101-.42h2.916zm-.056 5.417c3.914 0 7.088 3.174 7.088 7.088s-3.174 7.088-7.088 7.088-7.088-3.174-7.088-7.088 3.174-7.088 7.088-7.088zm0 11.69c2.549 0 4.602-2.053 4.602-4.602S14.51 7.913 11.961 7.913s-4.602 2.053-4.602 4.602 2.053 4.602 4.602 4.602zm9.007-11.69c0 .914-.741 1.655-1.655 1.655s-1.655-.741-1.655-1.655.741-1.655 1.655-1.655 1.655.741 1.655 1.655z" />
                         </svg>
-                        تابعنا على انستغرام
+                        {t("contact.followInstagram")}
                       </a>
                     </div>
                   </div>
