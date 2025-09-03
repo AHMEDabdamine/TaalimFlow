@@ -81,21 +81,13 @@ export class TelegramBotService implements TelegramService {
 
   formatContactSubmission(submission: any): string {
     return `
-🆕 <b>طلب تواصل جديد / Nouvelle soumission de contact / New Contact Submission</b>
-👤 <b>الاسم / Nom / Name:</b> ${submission.name}
-📧 <b>البريد الإلكتروني / Email:</b> ${submission.email}
-📱 <b>الهاتف / Téléphone / Phone:</b> ${
-      submission.phone || "غير مُقدم / Non fourni / Not provided"
-    }
-🏫 <b>المدرسة / École / School:</b> ${
-      submission.schoolName || "غير مُقدم / Non fourni / Not provided"
-    }
-💬 <b>الرسالة / Message:</b> ${
-      submission.message || "لا توجد رسالة / Aucun message / No message"
-    }
-🕐 <b>تم الإرسال في / Soumis le / Submitted at:</b> ${new Date().toLocaleString(
-      "ar-SA"
-    )}
+🆕 <b>طلب تواصل جديد</b>
+👤 <b>الاسم:</b> ${submission.name}
+📧 <b>البريد الإلكتروني:</b> ${submission.email}
+📱 <b>الهاتف:</b> ${submission.phone || "غير مُقدم"}
+🏫 <b>المدرسة:</b> ${submission.schoolName || "غير مُقدم"}
+💬 <b>الرسالة / Message:</b> ${submission.message || "لا توجد رسالة"}
+🕐 <b>تم الإرسال في:</b> ${new Date().toLocaleString("ar-SA")}
     `.trim();
   }
 
