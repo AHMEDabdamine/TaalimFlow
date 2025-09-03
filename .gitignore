@@ -12,7 +12,7 @@ dist
 dist-server
 dist-ssr
 *.local
-
+data.json
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
