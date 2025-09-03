@@ -101,18 +101,14 @@ export class TelegramBotService implements TelegramService {
 
   formatDemoRequest(request: any): string {
     return `
-🎯 <b>طلب عرض توضيحي جديد / New Demo Request</b>
-👤 <b>الاسم / Name:</b> ${request.name}
-📧 <b>البريد الإلكتروني / Email:</b> ${request.email}
-📱 <b>الهاتف / Phone:</b> ${request.phone || "غير مُقدم / Not provided"}
-🏫 <b>المدرسة / School:</b> ${request.schoolName || "غير مُقدم / Not provided"}
-🏷️ <b>نوع المدرسة / School Type:</b> ${
-      request.schoolType || "غير مُقدم / Not provided"
-    }
-👥 <b>عدد الطلاب / Students:</b> ${
-      request.numberOfStudents || "غير مُقدم / Not provided"
-    }
-🕐 <b>تم الإرسال في / Submitted at:</b> ${new Date().toLocaleString("ar-SA")}
+🎯 <b>طلب عرض توضيحي جديد</b>
+👤 <b>الاسم:</b> ${request.name}
+📧 <b>البريد الإلكتروني:</b> ${request.email}
+📱 <b>الهاتف:</b> ${request.phone || "غير مُقدم"}
+🏫 <b>المدرسة:</b> ${request.schoolName || "غير مُقدم"}
+🏷️ <b>نوع المدرسة:</b> ${request.schoolType || "غير مُقدم"}
+👥 <b>عدد الطلاب:</b> ${request.numberOfStudents || "غير مُقدم"}
+🕐 <b>تم الإرسال في:</b> ${new Date().toLocaleString("fr-FR")}
     `.trim();
   }
 }
