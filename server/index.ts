@@ -48,7 +48,7 @@ async function startServer() {
     });
     
     // Start server
-    server.listen(PORT, "0.0.0.0", () => {
+    server.listen(Number(PORT), "0.0.0.0", () => {
       console.log(`🎉 TaalimFlow is running successfully!`);
       console.log(`🚀 Server running on port ${PORT}`);
       console.log(`🌐 Frontend & Backend available at: http://0.0.0.0:${PORT}`);
