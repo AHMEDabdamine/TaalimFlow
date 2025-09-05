@@ -30,6 +30,16 @@ async function startServer() {
     // Register API routes
     const server = await registerRoutes(app);
     
+    // Health check endpoint for Docker/Dockploy
+    app.get("/api/health", (req, res) => {
+      res.status(200).json({ 
+        status: "healthy", 
+        timestamp: new Date().toISOString(),
+        uptime: process.uptime(),
+        environment: process.env.NODE_ENV || "development"
+      });
+    });
+    
     // Catch all handler: send back React's index.html file for any non-API routes
     app.get("*", (req, res) => {
       if (!req.path.startsWith("/api")) {
@@ -38,14 +48,15 @@ async function startServer() {
     });
     
     // Start server
-    server.listen(PORT, () => {
+    server.listen(PORT, "0.0.0.0", () => {
       console.log(`🎉 TaalimFlow is running successfully!`);
       console.log(`🚀 Server running on port ${PORT}`);
-      console.log(`🌐 Frontend & Backend available at: http://localhost:${PORT}`);
-      console.log(`📡 API endpoints available at: http://localhost:${PORT}/api`);
+      console.log(`🌐 Frontend & Backend available at: http://0.0.0.0:${PORT}`);
+      console.log(`📡 API endpoints available at: http://0.0.0.0:${PORT}/api`);
       console.log(`🔗 Database connected: ${process.env.DATABASE_URL ? '✅' : '❌'}`);
       console.log(`📱 Telegram configured: ${process.env.TELEGRAM_BOT_TOKEN ? '✅' : '❌'}`);
-      console.log(`\n🔗 Click here to access TaalimFlow: http://localhost:${PORT}`);
+      console.log(`💚 Health check: http://0.0.0.0:${PORT}/api/health`);
+      console.log(`\n🔗 Access TaalimFlow at: http://0.0.0.0:${PORT}`);
     });
 
     // Graceful shutdown
