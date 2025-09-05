@@ -56,6 +56,7 @@ async function startServer() {
       console.log(`🔗 Database connected: ${process.env.DATABASE_URL ? '✅' : '❌'}`);
       console.log(`📱 Telegram configured: ${process.env.TELEGRAM_BOT_TOKEN ? '✅' : '❌'}`);
       console.log(`💚 Health check: http://0.0.0.0:${PORT}/api/health`);
+      console.log(`📦 Deployed with Nixpacks`);
       console.log(`\n🔗 Access TaalimFlow at: http://0.0.0.0:${PORT}`);
     });
 
