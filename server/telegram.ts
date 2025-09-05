@@ -1,5 +1,3 @@
-import fetch from "node-fetch";
-
 export interface TelegramService {
   sendNotification(message: string): Promise<void>;
 }
@@ -35,6 +33,9 @@ export class TelegramBotService implements TelegramService {
 
     const sendPromises = this.chatIds.map(async (chatId) => {
       try {
+        // Use dynamic import for node-fetch to handle ESM
+        const { default: fetch } = await import("node-fetch");
+        
         const url = `https://api.telegram.org/bot${this.botToken}/sendMessage`;
         const response = await fetch(url, {
           method: "POST",
