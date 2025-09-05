@@ -8,7 +8,7 @@ import * as dotenv from "dotenv";
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 8080;
 
 // Middleware
 app.use(cors());
@@ -29,32 +29,38 @@ async function startServer() {
   try {
     // Register API routes
     const server = await registerRoutes(app);
-    
+
     // Health check endpoint for Docker/Dockploy
     app.get("/api/health", (req, res) => {
-      res.status(200).json({ 
-        status: "healthy", 
+      res.status(200).json({
+        status: "healthy",
         timestamp: new Date().toISOString(),
         uptime: process.uptime(),
-        environment: process.env.NODE_ENV || "development"
+        environment: process.env.NODE_ENV || "development",
       });
     });
-    
+
     // Catch all handler: send back React's index.html file for any non-API routes
     app.get("*", (req, res) => {
       if (!req.path.startsWith("/api")) {
         res.sendFile(path.join(distPath, "index.html"));
       }
     });
-    
+
     // Start server
     server.listen(Number(PORT), "0.0.0.0", () => {
       console.log(`🎉 TaalimFlow is running successfully!`);
       console.log(`🚀 Server running on port ${PORT}`);
       console.log(`🌐 Frontend & Backend available at: http://0.0.0.0:${PORT}`);
       console.log(`📡 API endpoints available at: http://0.0.0.0:${PORT}/api`);
-      console.log(`🔗 Database connected: ${process.env.DATABASE_URL ? '✅' : '❌'}`);
-      console.log(`📱 Telegram configured: ${process.env.TELEGRAM_BOT_TOKEN ? '✅' : '❌'}`);
+      console.log(
+        `🔗 Database connected: ${process.env.DATABASE_URL ? "✅" : "❌"}`
+      );
+      console.log(
+        `📱 Telegram configured: ${
+          process.env.TELEGRAM_BOT_TOKEN ? "✅" : "❌"
+        }`
+      );
       console.log(`💚 Health check: http://0.0.0.0:${PORT}/api/health`);
       console.log(`📦 Deployed with Nixpacks`);
       console.log(`\n🔗 Access TaalimFlow at: http://0.0.0.0:${PORT}`);

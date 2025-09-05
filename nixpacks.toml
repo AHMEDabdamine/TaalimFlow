@@ -1,6 +1,7 @@
 [variables]
 NODE_VERSION = "18"
 NPM_CONFIG_PRODUCTION = "false"
+PORT = "8080"
 
 [phases.setup]
 nixPkgs = ["nodejs_18", "npm-9_x"]
@@ -14,7 +15,7 @@ cmds = [
 ]
 
 [phases.start]
-cmd = "NODE_ENV=production node dist-server/server.cjs"
+cmd = "NODE_ENV=production PORT=8080 node dist-server/server.cjs"
 
 [start]
-cmd = "NODE_ENV=production node dist-server/server.cjs"
+cmd = "NODE_ENV=production PORT=8080 node dist-server/server.cjs"
