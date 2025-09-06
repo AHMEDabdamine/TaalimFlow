@@ -5,9 +5,13 @@ import { ThemeProvider } from "@/components/theme-provider";
 import "./i18n/index";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { useVisitorTracking } from "@/hooks/use-visitor-tracking";
 
 const App = () => {
   const { i18n } = useTranslation();
+  
+  // Track visitors automatically
+  useVisitorTracking();
 
   useEffect(() => {
     // Set default direction and language on app load
