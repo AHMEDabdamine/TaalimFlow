@@ -166,6 +166,14 @@ const AdminDashboard = () => {
   const [deletingItem, setDeletingItem] = useState<{ [key: string]: boolean }>(
     {}
   );
+  const [visitorStats, setVisitorStats] = useState({
+    uniqueVisitors: 0,
+    totalVisits: 0,
+    todayVisits: 0,
+    weeklyVisits: 0,
+    monthlyVisits: 0,
+    lastUpdated: ""
+  });
 
   // Check if user is already authenticated
   useEffect(() => {
@@ -244,6 +252,21 @@ const AdminDashboard = () => {
     } catch (error) {
       console.error("Error fetching settings:", error);
       console.log("Using default settings");
+    }
+  };
+
+  // Fetch visitor statistics
+  const fetchVisitorStats = async () => {
+    try {
+      const response = await fetch("/api/admin/visitor-stats");
+      if (response.ok) {
+        const result = await response.json();
+        if (result.success) {
+          setVisitorStats(result.data);
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching visitor stats:", error);
     }
   };
 
@@ -387,6 +410,7 @@ const AdminDashboard = () => {
     if (isAuthenticated) {
       fetchSubmissions();
       fetchSettings();
+      fetchVisitorStats();
     }
   }, [isAuthenticated]);
 
@@ -491,7 +515,7 @@ const AdminDashboard = () => {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
           <Card>
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
@@ -567,6 +591,25 @@ const AdminDashboard = () => {
                   </p>
                 </div>
                 <Calendar className="w-8 h-8 text-muted-foreground" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    Site Visitors
+                  </p>
+                  <p className="text-2xl font-bold">
+                    {visitorStats.uniqueVisitors}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {visitorStats.todayVisits} today
+                  </p>
+                </div>
+                <Eye className="w-8 h-8 text-muted-foreground" />
               </div>
             </CardContent>
           </Card>

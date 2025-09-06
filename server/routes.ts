@@ -2,6 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { telegramService } from "./telegram";
+import { visitorTracker } from "./visitor-tracker";
 import {
   insertContactSubmissionSchema,
   insertDemoRequestSchema,
@@ -176,6 +177,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({
         success: false,
         message: "Failed to update status",
+      });
+    }
+  });
+
+  // Visitor statistics endpoint for admin dashboard
+  app.get("/api/admin/visitor-stats", (req, res) => {
+    try {
+      const stats = visitorTracker.getStats();
+      res.json({
+        success: true,
+        data: stats
+      });
+    } catch (error) {
+      console.error("Error fetching visitor stats:", error);
+      res.status(500).json({
+        success: false,
+        message: "Failed to fetch visitor statistics",
+      });
+    }
+  });
+
+  // Daily visitor data endpoint for charts
+  app.get("/api/admin/visitor-daily", (req, res) => {
+    try {
+      const days = parseInt(req.query.days as string) || 30;
+      const dailyData = visitorTracker.getDailyVisits(days);
+      res.json({
+        success: true,
+        data: dailyData
+      });
+    } catch (error) {
+      console.error("Error fetching daily visitor data:", error);
+      res.status(500).json({
+        success: false,
+        message: "Failed to fetch daily visitor data",
       });
     }
   });
