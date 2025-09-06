@@ -52,7 +52,16 @@ export class FileStorage implements IStorage {
   private async readData(): Promise<FileData> {
     try {
       const data = await fs.readFile(this.dataPath, "utf-8");
-      return JSON.parse(data);
+      const parsed = JSON.parse(data);
+      
+      // Ensure all required properties exist
+      return {
+        contactSubmissions: parsed.contactSubmissions || [],
+        demoRequests: parsed.demoRequests || [],
+        visitors: parsed.visitors || [],
+        nextContactId: parsed.nextContactId || 1,
+        nextDemoId: parsed.nextDemoId || 1,
+      };
     } catch {
       return {
         contactSubmissions: [],
@@ -153,6 +162,11 @@ export class FileStorage implements IStorage {
     const data = await this.readData();
     const now = new Date().toISOString();
     
+    // Ensure visitors array exists
+    if (!data.visitors) {
+      data.visitors = [];
+    }
+    
     // Check if this IP has visited in the last 24 hours to avoid duplicate counting
     const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
     const existingVisitor = data.visitors.find(
@@ -183,6 +197,12 @@ export class FileStorage implements IStorage {
 
   async getVisitorStats(): Promise<VisitorStats> {
     const data = await this.readData();
+    
+    // Ensure visitors array exists
+    if (!data.visitors) {
+      data.visitors = [];
+    }
+    
     const now = new Date();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
     const thisWeek = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
