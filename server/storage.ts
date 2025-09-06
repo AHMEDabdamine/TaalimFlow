@@ -7,19 +7,6 @@ import {
 import fs from "fs/promises";
 import path from "path";
 
-export interface VisitorRecord {
-  ip: string;
-  visitedAt: string;
-  userAgent?: string;
-}
-
-export interface VisitorStats {
-  totalVisitors: number;
-  todayVisitors: number;
-  thisWeekVisitors: number;
-  thisMonthVisitors: number;
-}
-
 export interface IStorage {
   // Contact submissions
   createContactSubmission(submission: InsertContactSubmission): Promise<ContactSubmission>;
@@ -32,16 +19,11 @@ export interface IStorage {
   getAllDemoRequests(): Promise<DemoRequest[]>;
   markDemoRequestAsRead(id: number): Promise<void>;
   updateDemoRequestStatus(id: number, status: string): Promise<void>;
-  
-  // Visitor tracking
-  recordVisitor(ip: string, userAgent?: string): Promise<void>;
-  getVisitorStats(): Promise<VisitorStats>;
 }
 
 interface FileData {
   contactSubmissions: ContactSubmission[];
   demoRequests: DemoRequest[];
-  visitors: VisitorRecord[];
   nextContactId: number;
   nextDemoId: number;
 }
@@ -52,21 +34,11 @@ export class FileStorage implements IStorage {
   private async readData(): Promise<FileData> {
     try {
       const data = await fs.readFile(this.dataPath, "utf-8");
-      const parsed = JSON.parse(data);
-      
-      // Ensure all required properties exist
-      return {
-        contactSubmissions: parsed.contactSubmissions || [],
-        demoRequests: parsed.demoRequests || [],
-        visitors: parsed.visitors || [],
-        nextContactId: parsed.nextContactId || 1,
-        nextDemoId: parsed.nextDemoId || 1,
-      };
+      return JSON.parse(data);
     } catch {
       return {
         contactSubmissions: [],
         demoRequests: [],
-        visitors: [],
         nextContactId: 1,
         nextDemoId: 1,
       };
@@ -155,65 +127,6 @@ export class FileStorage implements IStorage {
       data.demoRequests[index].status = status;
       await this.writeData(data);
     }
-  }
-
-  // Visitor tracking
-  async recordVisitor(ip: string, userAgent?: string): Promise<void> {
-    const data = await this.readData();
-    const now = new Date().toISOString();
-    
-    // Ensure visitors array exists
-    if (!data.visitors) {
-      data.visitors = [];
-    }
-    
-    // Check if this IP has visited in the last 24 hours to avoid duplicate counting
-    const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-    const existingVisitor = data.visitors.find(
-      v => v.ip === ip && v.visitedAt > yesterday
-    );
-    
-    if (!existingVisitor) {
-      const newVisitor: VisitorRecord = {
-        ip,
-        visitedAt: now,
-        userAgent,
-      };
-      data.visitors.push(newVisitor);
-      
-      // Log the new visitor to console
-      console.log(`✅ New unique visitor recorded: ${ip} at ${now}`);
-      console.log(`   Total visitors in database: ${data.visitors.length}`);
-      
-      // Keep only last 30 days of visitor data to prevent file from growing too large
-      const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
-      data.visitors = data.visitors.filter(v => v.visitedAt > thirtyDaysAgo);
-      
-      await this.writeData(data);
-    } else {
-      console.log(`🔄 Returning visitor (within 24h): ${ip}`);
-    }
-  }
-
-  async getVisitorStats(): Promise<VisitorStats> {
-    const data = await this.readData();
-    
-    // Ensure visitors array exists
-    if (!data.visitors) {
-      data.visitors = [];
-    }
-    
-    const now = new Date();
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
-    const thisWeek = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
-    const thisMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
-    
-    return {
-      totalVisitors: data.visitors.length,
-      todayVisitors: data.visitors.filter(v => v.visitedAt >= today).length,
-      thisWeekVisitors: data.visitors.filter(v => v.visitedAt >= thisWeek).length,
-      thisMonthVisitors: data.visitors.filter(v => v.visitedAt >= thisMonth).length,
-    };
   }
 }
 

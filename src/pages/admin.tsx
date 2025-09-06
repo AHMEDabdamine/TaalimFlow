@@ -166,12 +166,6 @@ const AdminDashboard = () => {
   const [deletingItem, setDeletingItem] = useState<{ [key: string]: boolean }>(
     {}
   );
-  const [visitorStats, setVisitorStats] = useState({
-    totalVisitors: 0,
-    todayVisitors: 0,
-    thisWeekVisitors: 0,
-    thisMonthVisitors: 0,
-  });
 
   // Check if user is already authenticated
   useEffect(() => {
@@ -250,21 +244,6 @@ const AdminDashboard = () => {
     } catch (error) {
       console.error("Error fetching settings:", error);
       console.log("Using default settings");
-    }
-  };
-
-  // Fetch visitor statistics
-  const fetchVisitorStats = async () => {
-    try {
-      const response = await fetch("/api/admin/visitor-stats");
-      if (response.ok) {
-        const data = await response.json();
-        setVisitorStats(data);
-      } else {
-        console.log("Could not fetch visitor stats");
-      }
-    } catch (error) {
-      console.error("Error fetching visitor stats:", error);
     }
   };
 
@@ -408,7 +387,6 @@ const AdminDashboard = () => {
     if (isAuthenticated) {
       fetchSubmissions();
       fetchSettings();
-      fetchVisitorStats();
     }
   }, [isAuthenticated]);
 
@@ -513,7 +491,7 @@ const AdminDashboard = () => {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <Card>
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
@@ -592,31 +570,12 @@ const AdminDashboard = () => {
               </div>
             </CardContent>
           </Card>
-
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">
-                    Site Visitors
-                  </p>
-                  <p className="text-2xl font-bold">
-                    {visitorStats.totalVisitors}
-                  </p>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Today: {visitorStats.todayVisitors}
-                  </p>
-                </div>
-                <Eye className="w-8 h-8 text-muted-foreground" />
-              </div>
-            </CardContent>
-          </Card>
         </div>
 
         {/* Admin Tabs */}
         <div className="w-full mx-auto">
           <Tabs defaultValue="submissions" className="w-full">
-            <TabsList className="grid w-full grid-cols-3 mb-6">
+            <TabsList className="grid w-full grid-cols-2 mb-6">
               <TabsTrigger
                 value="submissions"
                 className="flex items-center gap-2"
@@ -627,10 +586,6 @@ const AdminDashboard = () => {
               <TabsTrigger value="settings" className="flex items-center gap-2">
                 <Settings className="w-4 h-4" />
                 Settings
-              </TabsTrigger>
-              <TabsTrigger value="analytics" className="flex items-center gap-2">
-                <Eye className="w-4 h-4" />
-                Analytics
               </TabsTrigger>
             </TabsList>
 
@@ -962,65 +917,6 @@ const AdminDashboard = () => {
                   </Button>
                 </div>
               </div>
-            </TabsContent>
-
-            <TabsContent value="analytics" className="space-y-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Eye className="w-5 h-5" />
-                    Visitor Analytics
-                  </CardTitle>
-                  <CardDescription>
-                    Track unique visitors to your website (by IP address)
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div className="p-4 border rounded-lg">
-                      <div className="text-2xl font-bold text-blue-600">
-                        {visitorStats.totalVisitors}
-                      </div>
-                      <div className="text-sm text-muted-foreground">
-                        Total Visitors (30 days)
-                      </div>
-                    </div>
-                    <div className="p-4 border rounded-lg">
-                      <div className="text-2xl font-bold text-green-600">
-                        {visitorStats.todayVisitors}
-                      </div>
-                      <div className="text-sm text-muted-foreground">
-                        Today's Visitors
-                      </div>
-                    </div>
-                    <div className="p-4 border rounded-lg">
-                      <div className="text-2xl font-bold text-orange-600">
-                        {visitorStats.thisWeekVisitors}
-                      </div>
-                      <div className="text-sm text-muted-foreground">
-                        This Week
-                      </div>
-                    </div>
-                    <div className="p-4 border rounded-lg">
-                      <div className="text-2xl font-bold text-purple-600">
-                        {visitorStats.thisMonthVisitors}
-                      </div>
-                      <div className="text-sm text-muted-foreground">
-                        This Month
-                      </div>
-                    </div>
-                  </div>
-                  <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                    <h4 className="font-medium mb-2">How it works:</h4>
-                    <ul className="text-sm text-muted-foreground space-y-1">
-                      <li>• Tracks unique visitors by IP address</li>
-                      <li>• Only counts each IP once per 24-hour period</li>
-                      <li>• Data is stored for 30 days maximum</li>
-                      <li>• Privacy-focused - no personal data collected</li>
-                    </ul>
-                  </div>
-                </CardContent>
-              </Card>
             </TabsContent>
           </Tabs>
         </div>

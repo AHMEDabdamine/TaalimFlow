@@ -1,13 +1,13 @@
 [variables]
-NODE_VERSION = "18"
+NODE_VERSION = "22"
 NPM_CONFIG_PRODUCTION = "false"
 PORT = "8080"
 
 [phases.setup]
-nixPkgs = ["nodejs_18", "npm-9_x"]
+nixPkgs = ["nodejs_22", "npm-9_x"]
 
 [phases.install]
-cmds = ["npm ci"]
+cmds = ["npm install"]
 
 [phases.build]
 cmds = [
