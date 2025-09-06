@@ -2,7 +2,6 @@ import express from "express";
 import cors from "cors";
 import path from "path";
 import { registerRoutes } from "./routes";
-import { visitorTracker } from "./visitor-tracker";
 import * as dotenv from "dotenv";
 
 // Load environment variables
@@ -19,9 +18,6 @@ app.use(express.urlencoded({ extended: true }));
 // Serve static files from the React app build
 const distPath = path.join(__dirname, "../../dist");
 app.use(express.static(distPath));
-
-// Visitor tracking middleware (before logging)
-app.use(visitorTracker.middleware);
 
 // Log incoming requests
 app.use((req, res, next) => {
