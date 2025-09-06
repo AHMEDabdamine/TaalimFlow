@@ -21,7 +21,17 @@ app.use(express.static(distPath));
 
 // Log incoming requests
 app.use((req, res, next) => {
-  console.log(`${req.method} ${req.path}`, req.body);
+  const timestamp = new Date().toISOString();
+  const ip = req.ip || req.connection.remoteAddress || req.headers['x-forwarded-for'] || 'unknown';
+  
+  // Log all requests with visitor info
+  if (req.path.startsWith('/api/')) {
+    console.log(`📡 [${timestamp}] API ${req.method} ${req.path} from ${ip}`);
+  } else {
+    console.log(`🌍 [${timestamp}] Website visit: ${req.method} ${req.path} from ${ip}`);
+    console.log(`   User Agent: ${req.headers['user-agent'] || 'Unknown'}`);
+  }
+  
   next();
 });
 

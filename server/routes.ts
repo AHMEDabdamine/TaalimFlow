@@ -214,11 +214,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const ip = req.ip || req.connection.remoteAddress || req.headers['x-forwarded-for'] as string || 'unknown';
       const userAgent = req.headers['user-agent'];
+      const timestamp = new Date().toISOString();
+      
+      // Log the visitor
+      console.log(`🌐 [${timestamp}] New visitor from IP: ${ip}`);
+      console.log(`   User Agent: ${userAgent || 'Unknown'}`);
       
       await storage.recordVisitor(ip, userAgent);
       res.json({ success: true, message: "Visitor recorded" });
     } catch (error) {
-      console.error("Error recording visitor:", error);
+      console.error("❌ Error recording visitor:", error);
       res.status(500).json({
         success: false,
         message: "Failed to record visitor",

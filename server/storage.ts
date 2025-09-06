@@ -167,11 +167,17 @@ export class FileStorage implements IStorage {
       };
       data.visitors.push(newVisitor);
       
+      // Log the new visitor to console
+      console.log(`✅ New unique visitor recorded: ${ip} at ${now}`);
+      console.log(`   Total visitors in database: ${data.visitors.length}`);
+      
       // Keep only last 30 days of visitor data to prevent file from growing too large
       const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
       data.visitors = data.visitors.filter(v => v.visitedAt > thirtyDaysAgo);
       
       await this.writeData(data);
+    } else {
+      console.log(`🔄 Returning visitor (within 24h): ${ip}`);
     }
   }
 
