@@ -1,21 +1,19 @@
 [variables]
-NODE_VERSION = "18"
+NODE_VERSION = "22"
 NPM_CONFIG_PRODUCTION = "false"
-PORT = "8080"
 
 [phases.setup]
-nixPkgs = ["nodejs_18", "npm-9_x"]
+nixPkgs = ["nodejs_22", "npm-9_x"]
 
 [phases.install]
-cmds = ["npm ci"]
+cmds = ["npm install"]
 
 [phases.build]
 cmds = [
-  "npm run build"
-]
+  "npm run build"]
 
 [phases.start]
-cmd = "NODE_ENV=production PORT=8080 node dist-server/server.cjs"
+cmd = "NODE_ENV=production node dist/index.js"
 
 [start]
-cmd = "NODE_ENV=production PORT=8080 node dist-server/server.cjs"
+cmd = "NODE_ENV=production node dist/index.js"
